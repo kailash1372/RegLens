@@ -1,0 +1,19 @@
+{
+  "brand": "REIGN",
+  "product_name": "Orange Dreamsicle",
+  "product_line": "Reign Total Body Fuel",
+  "flavor": "Orange Dreamsicle",
+  "serving_size": {"value": null, "unit": null, "ml": null},
+  "caffeine_mg": 300,
+  "calories": null,
+  "sugar_g": null,
+  "nutrition_facts": [],
+  "ingredients": [],
+  "warnings": [],
+  "claims": ["Zero Sugar", "BCAAS", "Vitamins B3, B6, B12", "Reduce Fatigue"],
+  "source": {
+    "url": "https://www.reignbodyfuel.com/en-us/products/orange-dreamsicle/",
+    "market": "US",
+    "scraped_at": "2026-08-23T13:35:00Z"
+  }
+}

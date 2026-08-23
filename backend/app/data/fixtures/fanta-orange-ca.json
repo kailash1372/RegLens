@@ -1,0 +1,36 @@
+{
+  "brand": "Fanta",
+  "product_name": "Fanta Orange",
+  "product_line": "Fanta",
+  "flavor": "Orange",
+  "serving_size": {"value": 500, "unit": "ml", "ml": 500},
+  "caffeine_mg": null,
+  "calories": 230,
+  "sugar_g": 62,
+  "nutrition_facts": [
+    {"name": "Calories", "value": 230, "unit": null, "daily_value_percent": null},
+    {"name": "Fat", "value": 0, "unit": "g", "daily_value_percent": 0},
+    {"name": "Carbohydrate", "value": 62, "unit": "g", "daily_value_percent": null},
+    {"name": "Sugars", "value": 62, "unit": "g", "daily_value_percent": 62},
+    {"name": "Protein", "value": 0, "unit": "g", "daily_value_percent": null},
+    {"name": "Sodium", "value": 60, "unit": "mg", "daily_value_percent": 3}
+  ],
+  "ingredients": [
+    "Carbonated water",
+    "Sugar/glucose-fructose",
+    "Citric acid",
+    "Sodium benzoate",
+    "Natural flavour",
+    "Modified cornstarch",
+    "Sunset yellow FCF",
+    "Allura red",
+    "Ascorbic acid"
+  ],
+  "warnings": [],
+  "claims": [],
+  "source": {
+    "url": "https://www.coca-cola.com/ca/en/brands/fanta",
+    "market": "CA",
+    "scraped_at": "2026-08-23T13:43:10Z"
+  }
+}

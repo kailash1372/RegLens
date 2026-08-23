@@ -1,0 +1,56 @@
+{
+  "brand": "C4",
+  "product_name": "C4 Performance Energy",
+  "product_line": "C4 Performance Energy",
+  "flavor": "Frozen Bombsicle",
+  "serving_size": {"value": 16, "unit": "fl oz", "ml": 473},
+  "caffeine_mg": 200,
+  "calories": 5,
+  "sugar_g": 0,
+  "nutrition_facts": [
+    {"name": "Calories", "value": 5, "unit": null, "daily_value_percent": null},
+    {"name": "Total Fat", "value": 0, "unit": "g", "daily_value_percent": 0},
+    {"name": "Sodium", "value": 55, "unit": "mg", "daily_value_percent": 2},
+    {"name": "Total Carbohydrate", "value": 0, "unit": "g", "daily_value_percent": 0},
+    {"name": "Total Sugars", "value": 0, "unit": "g", "daily_value_percent": null},
+    {"name": "Includes Added Sugars", "value": 0, "unit": "g", "daily_value_percent": 0},
+    {"name": "Protein", "value": 0, "unit": "g", "daily_value_percent": null},
+    {"name": "Potassium", "value": 85, "unit": "mg", "daily_value_percent": 2},
+    {"name": "Vitamin B12", "value": 6, "unit": "mcg", "daily_value_percent": 250}
+  ],
+  "ingredients": [
+    "Carbonated Water",
+    "Malic Acid",
+    "BetaPower Betaine Anhydrous",
+    "Citric Acid",
+    "CarnoSyn Beta-Alanine",
+    "Potassium Sorbate",
+    "Sodium Citrate",
+    "Sucralose",
+    "Caffeine Anhydrous",
+    "Acesulfame Potassium",
+    "Natural & Artificial Flavors",
+    "Cyanocobalamin"
+  ],
+  "warnings": [],
+  "claims": [],
+  "source": {
+    "url": "https://cellucor.com/products/c4-performance-energy-frozen-bombsicle",
+    "market": "US",
+    "scraped_at": "2026-08-22T12:00:00Z"
+  },
+  "scraper_assets": {
+    "nutrition_label_images": [
+      {
+        "url": "https://cellucor.com/cdn/shop/files/C4BEV_3114_Digital_FrozenBomb_Wave0_Performance_StylizedPDPs_Nutrition.jpg?v=1776359497&width=1946",
+        "content_type": "image",
+        "purpose": "nutrition_label"
+      },
+      {
+        "url": "https://cellucor.com/cdn/shop/files/C4BEV_3114_Digital_FrozenBomb_Wave0_Performance_BasicPDPs-NFP-Fun.png?v=1776359497&width=1946",
+        "content_type": "image",
+        "purpose": "nutrition_label"
+      }
+    ]
+  }
+}

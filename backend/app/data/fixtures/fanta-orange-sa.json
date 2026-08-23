@@ -1,0 +1,42 @@
+{
+  "brand": "Fanta",
+  "product_name": "Fanta Orange",
+  "product_line": "Fanta",
+  "flavor": "Orange",
+  "serving_size": {"value": 100, "unit": "ml", "ml": 100},
+  "caffeine_mg": null,
+  "calories": 58,
+  "sugar_g": 14.5,
+  "nutrition_facts": [
+    {"name": "Energy", "value": 58, "unit": "kcal", "daily_value_percent": null},
+    {"name": "Total Fat", "value": 0, "unit": "g", "daily_value_percent": 0},
+    {"name": "Saturated Fat", "value": 0, "unit": "g", "daily_value_percent": 0},
+    {"name": "Trans Fat", "value": 0, "unit": "g", "daily_value_percent": 0},
+    {"name": "Cholesterol", "value": 0, "unit": "mg", "daily_value_percent": 0},
+    {"name": "Total Carbohydrates", "value": 14.5, "unit": "g", "daily_value_percent": 6},
+    {"name": "Dietary Fibers", "value": 0, "unit": "g", "daily_value_percent": 0},
+    {"name": "Total Sugars", "value": 14.5, "unit": "g", "daily_value_percent": 29},
+    {"name": "Added Sugars", "value": 14.5, "unit": "g", "daily_value_percent": 29},
+    {"name": "Sodium", "value": null, "unit": "mg", "daily_value_percent": 0},
+    {"name": "Protein", "value": 0, "unit": "g", "daily_value_percent": null}
+  ],
+  "ingredients": [
+    "Carbonated Water",
+    "Sugar",
+    "Acidifier: Citric Acid",
+    "Natural Orange Flavors",
+    "Preservative: Potassium Sorbate",
+    "Vitamin C",
+    "Color: Sunset Yellow*",
+    "Antioxidant: Calcium Disodium(EDTA)"
+  ],
+  "warnings": [
+    "*This material may have a negative effect on activity and concentration in Children."
+  ],
+  "claims": [],
+  "source": {
+    "url": "https://www.coca-cola.com/sa/en/brands/fanta",
+    "market": "SA",
+    "scraped_at": "2026-08-23T13:43:10Z"
+  }
+}

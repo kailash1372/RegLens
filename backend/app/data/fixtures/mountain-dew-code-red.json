@@ -1,0 +1,43 @@
+{
+  "brand": "Mountain Dew",
+  "product_name": "Mountain Dew Code Red",
+  "product_line": "Mountain Dew",
+  "flavor": "Code Red",
+  "serving_size": {"value": 1, "unit": "bottle", "ml": null},
+  "caffeine_mg": 91,
+  "calories": 280,
+  "sugar_g": 76,
+  "nutrition_facts": [
+    {"name": "Calories", "value": 280, "unit": null, "daily_value_percent": null},
+    {"name": "Total Fat", "value": 0, "unit": "g", "daily_value_percent": 0},
+    {"name": "Sodium", "value": 180, "unit": "mg", "daily_value_percent": 8},
+    {"name": "Total Carbohydrate", "value": 76, "unit": "g", "daily_value_percent": 28},
+    {"name": "Total Sugars", "value": 76, "unit": "g", "daily_value_percent": null},
+    {"name": "Includes 76g Added Sugars", "value": null, "unit": null, "daily_value_percent": 152},
+    {"name": "Protein", "value": 0, "unit": "g", "daily_value_percent": null}
+  ],
+  "ingredients": [
+    "CARBONATED WATER",
+    "HIGH FRUCTOSE CORN SYRUP",
+    "CONCENTRATED ORANGE JUICE",
+    "CITRIC ACID",
+    "SODIUM POLYPHOSPHATES (TO PROTECT FLAVOR)",
+    "SODIUM BENZOATE (PRESERVES FRESHNESS)",
+    "NATURAL FLAVOR",
+    "CAFFEINE",
+    "SODIUM CITRATE",
+    "GUM ARABIC",
+    "CALCIUM DISODIUM EDTA (TO PROTECT FLAVOR)",
+    "RED 40",
+    "YELLOW 5",
+    "BLUE 1"
+  ],
+  "warnings": [],
+  "claims": [],
+  "source": {
+    "url": "https://www.pepsicoproductfacts.com/Home/Product?form=RTD&formula=92301%2A01%2A10-01&size=20",
+    "market": "US",
+    "scraped_at": "2026-08-23T13:46:39Z"
+  },
+  "scraper_assets": {"nutrition_label_images": []}
+}

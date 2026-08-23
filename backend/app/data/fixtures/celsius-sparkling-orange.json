@@ -1,0 +1,28 @@
+{
+  "brand": "CELSIUS",
+  "product_name": "Sparkling Orange",
+  "product_line": "CELSIUS Sparkling",
+  "flavor": "Orange",
+  "serving_size": {"value": 12, "unit": "fl oz", "ml": 355},
+  "caffeine_mg": 200,
+  "calories": 10,
+  "sugar_g": 0,
+  "nutrition_facts": [],
+  "ingredients": [],
+  "warnings": [],
+  "claims": [],
+  "source": {
+    "url": "https://www.celsius.com/products/celsius/sparkling-orange/",
+    "market": "US",
+    "scraped_at": "2026-08-22T12:00:00Z"
+  },
+  "scraper_assets": {
+    "nutrition_label_images": [
+      {
+        "url": "https://www.celsius.com/wp-content/uploads/2023/08/Orange-supp.png",
+        "content_type": "image",
+        "purpose": "nutrition_label"
+      }
+    ]
+  }
+}

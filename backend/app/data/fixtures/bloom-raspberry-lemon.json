@@ -1,0 +1,58 @@
+{
+  "brand": "Bloom Nutrition",
+  "product_name": "Sparkling Energy",
+  "product_line": "Bloom Sparkling Energy",
+  "flavor": "Raspberry Lemon",
+  "serving_size": {"value": 12, "unit": "fl oz", "ml": 355},
+  "caffeine_mg": 180,
+  "calories": 10,
+  "sugar_g": 0,
+  "nutrition_facts": [
+    {"name": "Calories", "value": 10, "unit": null, "daily_value_percent": null},
+    {"name": "Total Fat", "value": 0, "unit": "g", "daily_value_percent": 0},
+    {"name": "Sodium", "value": 0, "unit": "mg", "daily_value_percent": 0},
+    {"name": "Total Carbohydrate", "value": 1, "unit": "g", "daily_value_percent": 1},
+    {"name": "Dietary Fiber", "value": 0, "unit": "g", "daily_value_percent": 0},
+    {"name": "Total Sugars", "value": 0, "unit": "g", "daily_value_percent": null},
+    {"name": "Includes Added Sugars", "value": 0, "unit": "g", "daily_value_percent": 0},
+    {"name": "Protein", "value": 0, "unit": "g", "daily_value_percent": null},
+    {"name": "Niacin", "value": 8, "unit": "mg", "daily_value_percent": 50},
+    {"name": "Vitamin B6", "value": 1.7, "unit": "mg", "daily_value_percent": 100},
+    {"name": "Vitamin B12", "value": 2.4, "unit": "mcg", "daily_value_percent": 100}
+  ],
+  "ingredients": [
+    "Carbonated Water",
+    "Citric Acid",
+    "Xylooligosaccharides",
+    "Taurine",
+    "Natural Flavors",
+    "L-Theanine",
+    "Natural Caffeine (from Green Coffee Bean Extract)",
+    "Potassium Benzoate",
+    "Sucralose",
+    "Potassium Citrate",
+    "Asian Ginseng Root Extract",
+    "Apple Cider Vinegar",
+    "Niacinamide",
+    "Pyridoxine HCl",
+    "Cyanocobalamin"
+  ],
+  "warnings": [
+    "Not recommended for people who are pregnant or nursing, adults under 18, or people sensitive to caffeine."
+  ],
+  "claims": ["Zero sugar", "Natural caffeine", "No artificial flavors", "No artificial colors", "No aspartame"],
+  "source": {
+    "url": "https://bloomnu.com/products/sparkling-energy?variant=44135391101028",
+    "market": "US",
+    "scraped_at": "2026-08-22T12:00:00Z"
+  },
+  "scraper_assets": {
+    "nutrition_label_images": [
+      {
+        "url": "https://bloomnu.com/cdn/shop/files/bloomenergy_raspberrylemon_03.png?v=1784239018&width=1600",
+        "content_type": "image",
+        "purpose": "nutrition_label"
+      }
+    ]
+  }
+}

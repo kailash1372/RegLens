@@ -1,0 +1,41 @@
+{
+  "brand": "MAGGI",
+  "product_name": "MAGGI® 2-Minute Noodles",
+  "product_line": "2-Minute Noodles",
+  "flavor": null,
+  "serving_size": {"value": 75, "unit": "g", "ml": null},
+  "caffeine_mg": null,
+  "calories": 288,
+  "sugar_g": 1.4,
+  "nutrition_facts": [
+    {"name": "Energy (kcal) (per 100g)", "value": 384, "unit": "kcal", "daily_value_percent": null},
+    {"name": "Energy (kcal) (per serving: 75g)", "value": 288, "unit": "kcal", "daily_value_percent": 14},
+    {"name": "Protein (g) (per 100g)", "value": 8.2, "unit": "g", "daily_value_percent": null},
+    {"name": "Protein (g) (per serving: 75g)", "value": 6.2, "unit": "g", "daily_value_percent": 12},
+    {"name": "Carbohydrate (g) (per 100g)", "value": 59.6, "unit": "g", "daily_value_percent": null},
+    {"name": "Carbohydrate (g) (per serving: 75g)", "value": 44.7, "unit": "g", "daily_value_percent": 17},
+    {"name": "-Total Sugars(g) (per 100g)", "value": 1.8, "unit": "g", "daily_value_percent": null},
+    {"name": "-Total Sugars(g) (per serving: 75g)", "value": 1.4, "unit": "g", "daily_value_percent": 2},
+    {"name": "-Added Sugars(g) (per 100g)", "value": 1.1, "unit": "g", "daily_value_percent": null},
+    {"name": "-Added Sugars(g) (per serving: 75g)", "value": 0.8, "unit": "g", "daily_value_percent": null},
+    {"name": "Total Fat (g) (per 100g)", "value": 12.5, "unit": "g", "daily_value_percent": null},
+    {"name": "Total Fat (g) (per serving: 75g)", "value": 9.4, "unit": "g", "daily_value_percent": 13},
+    {"name": "-Saturated Fat (Not more than) (g) (per 100g)", "value": 8.2, "unit": "g", "daily_value_percent": null},
+    {"name": "-Saturated Fat (Not more than) (g) (per serving: 75g)", "value": 6.2, "unit": "g", "daily_value_percent": 31},
+    {"name": "-Trans Fat (Not more than) (g) (per 100g)", "value": 0.13, "unit": "g", "daily_value_percent": null},
+    {"name": "-Trans Fat (Not more than) (g) (per serving: 75g)", "value": 0.1, "unit": "g", "daily_value_percent": null},
+    {"name": "Sodium (mg) (per 100g)", "value": 1000, "unit": "mg", "daily_value_percent": null},
+    {"name": "Sodium (mg) (per serving: 75g)", "value": 750, "unit": "mg", "daily_value_percent": 31},
+    {"name": "Iron (mg) (per 100g)", "value": 6.9, "unit": "mg", "daily_value_percent": null},
+    {"name": "Iron (mg) (per serving: 75g); RDA", "value": 5.17, "unit": "mg", "daily_value_percent": 17}
+  ],
+  "ingredients": [],
+  "warnings": [],
+  "claims": [],
+  "source": {
+    "url": "https://www.maggi.in/en/product/maggi-2-minute-noodles-masala/",
+    "market": "IN",
+    "scraped_at": "2026-08-23T13:50:00Z"
+  },
+  "scraper_assets": {"nutrition_label_images": []}
+}
