@@ -27,13 +27,16 @@ class RegulatoryRepository:
                 """
                 INSERT INTO regulatory_sources
                     (id, authority, jurisdiction, title, source_url, retrieved_at,
-                     source_type, content, evidence_text, status, last_error)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     source_type, content, evidence_text, evidence_anchor, content_hash,
+                     status, last_error)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET authority=excluded.authority,
                     jurisdiction=excluded.jurisdiction, title=excluded.title,
                     source_url=excluded.source_url, retrieved_at=excluded.retrieved_at,
                     source_type=excluded.source_type, content=excluded.content,
-                    evidence_text=excluded.evidence_text, status=excluded.status,
+                    evidence_text=excluded.evidence_text,
+                    evidence_anchor=excluded.evidence_anchor,
+                    content_hash=excluded.content_hash, status=excluded.status,
                     last_error=excluded.last_error
                 """,
                 (
@@ -46,6 +49,8 @@ class RegulatoryRepository:
                     source.source_type,
                     source.content,
                     source.evidence_text,
+                    source.evidence_anchor,
+                    source.content_hash,
                     source.status.value,
                     source.last_error,
                 ),
@@ -70,7 +75,7 @@ class RegulatoryRepository:
             )
 
     def record_source_refresh_failure(self, source_id: str, error: str) -> None:
-        """Mark retrieval degraded while preserving the last successful content."""
+        """Preserve evidence but disable automation that could not be reconfirmed."""
         with self.database.connect() as connection:
             connection.execute(
                 """
@@ -79,6 +84,34 @@ class RegulatoryRepository:
                 WHERE id = ?
                 """,
                 (RegulatorySourceStatus.REFRESH_FAILED.value, error, source_id),
+            )
+            connection.execute(
+                """
+                UPDATE regulatory_rules
+                SET verification_status = ?
+                WHERE source_id = ?
+                """,
+                (VerificationStatus.NEEDS_REVIEW.value, source_id),
+            )
+
+    def record_missing_evidence_anchor(self, source_id: str, error: str) -> None:
+        """Preserve last-known-good evidence and disable rules it can no longer support."""
+        with self.database.connect() as connection:
+            connection.execute(
+                """
+                UPDATE regulatory_sources
+                SET status = ?, last_error = ?
+                WHERE id = ?
+                """,
+                (RegulatorySourceStatus.REFRESH_FAILED.value, error, source_id),
+            )
+            connection.execute(
+                """
+                UPDATE regulatory_rules
+                SET verification_status = ?
+                WHERE source_id = ?
+                """,
+                (VerificationStatus.NEEDS_REVIEW.value, source_id),
             )
 
     def upsert_rule(self, rule: RegulatoryRule) -> None:
@@ -91,9 +124,16 @@ class RegulatoryRepository:
                      effective_from, effective_until, verification_status, evidence_excerpt)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET source_id=excluded.source_id,
+                    jurisdiction=excluded.jurisdiction, authority=excluded.authority,
+                    category=excluded.category, subject=excluded.subject,
+                    rule_type=excluded.rule_type, comparator=excluded.comparator,
+                    threshold=excluded.threshold, unit=excluded.unit,
+                    affected_population=excluded.affected_population,
                     applicability_notes=excluded.applicability_notes,
+                    effective_from=excluded.effective_from,
+                    effective_until=excluded.effective_until,
                     verification_status=excluded.verification_status,
-                    evidence_excerpt=excluded.evidence_excerpt, threshold=excluded.threshold
+                    evidence_excerpt=excluded.evidence_excerpt
                 """,
                 (
                     rule.id,
@@ -144,6 +184,42 @@ class RegulatoryRepository:
                 ),
             )
 
+    def replace_findings(
+        self,
+        product_id: str,
+        findings: list[RegulatoryFinding],
+    ) -> None:
+        """Atomically replace one product's complete deterministic finding set."""
+        if any(finding.product_id != product_id for finding in findings):
+            raise ValueError("Every replacement finding must belong to the target product.")
+        with self.database.connect() as connection:
+            connection.execute(
+                "DELETE FROM regulatory_findings WHERE product_id = ?", (product_id,)
+            )
+            connection.executemany(
+                """
+                INSERT INTO regulatory_findings
+                    (product_id, rule_id, finding_type, observed_value, threshold_value,
+                     difference, unit, status, explanation_template, evaluated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                [
+                    (
+                        finding.product_id,
+                        finding.rule_id,
+                        finding.finding_type,
+                        finding.observed_value,
+                        finding.threshold_value,
+                        finding.difference,
+                        finding.unit,
+                        finding.status,
+                        finding.explanation_template,
+                        finding.evaluated_at.isoformat(),
+                    )
+                    for finding in findings
+                ],
+            )
+
     def upsert_recall(self, recall: RecallRecord) -> None:
         with self.database.connect() as connection:
             connection.execute(
@@ -189,6 +265,8 @@ class RegulatoryRepository:
                 source_type=row["source_type"],
                 content=row["content"],
                 evidence_text=row["evidence_text"],
+                evidence_anchor=row["evidence_anchor"],
+                content_hash=row["content_hash"],
                 status=row["status"],
                 last_error=row["last_error"],
             )

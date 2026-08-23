@@ -245,9 +245,7 @@ return {
   product_name: isTargetProduct ? name : null,
   product_line: isTargetProduct ? productLine : null,
   flavor: isTargetProduct ? flavor : null,
-  serving_size: input.schema_seed
-    ? { value: 0, unit: "fl oz", ml: 0 }
-    : serving,
+  serving_size: serving,
   caffeine_mg: isTargetProduct
     ? numberValue(
         firstMatch(factText, [

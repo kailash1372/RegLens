@@ -29,7 +29,10 @@ class RegulatoryService:
 
     def refresh_sources(self) -> list[RegulatorySource]:
         """Refresh the known primary-source corpus independently per source."""
-        return RegulatorySourceIngestor(self.repository).refresh_all()
+        RegulatorySourceIngestor(self.repository).refresh_all()
+        seed_regulatory_evidence(self.repository.database)
+        self.evaluate_catalog()
+        return self.repository.list_sources()
 
     def list_discoveries(self) -> list[RegulatoryDiscovery]:
         """Expose a small, current set of source-backed homepage discoveries."""
@@ -38,8 +41,9 @@ class RegulatoryService:
     def evaluate_product(self, product: ProductRecord) -> list[RegulatoryFinding]:
         """Evaluate every eligible rule against the active snapshot."""
         if product.active_snapshot is None:
+            self.repository.replace_findings(product.id, [])
             return []
-        findings = []
+        findings: list[RegulatoryFinding] = []
         for rule in self.repository.list_rules():
             eligible_categories = {
                 "caffeinated-energy-drink": {"energy_drink", "energy-drink"},
@@ -48,8 +52,8 @@ class RegulatoryService:
                 continue
             finding = evaluate_snapshot(product.id, product.active_snapshot, rule)
             if finding:
-                self.repository.upsert_finding(finding)
                 findings.append(finding)
+        self.repository.replace_findings(product.id, findings)
         return findings
 
     def evaluate_catalog(self) -> list[RegulatoryFinding]:

@@ -5,7 +5,7 @@ const fs = require("node:fs");
 const parser = fs.readFileSync(__dirname + "/parser.js", "utf8");
 new Function("input", parser);
 
-function run({ url, name, description, body, images = {} }) {
+function run({ url, name, description, body, images = {}, schemaSeed = false }) {
   const selectors = {
     ".single-products .product-header .desktop .top .left h3": name,
     ".single-products .product-header .desktop .top .left .product-description":
@@ -24,7 +24,7 @@ function run({ url, name, description, body, images = {} }) {
       return images[selector] || [];
     },
   };
-  return new Function("input", parser)({ url });
+  return new Function("input", parser)({ url, schema_seed: schemaSeed });
 }
 
 const target = run({
@@ -33,6 +33,7 @@ const target = run({
   description:
     "Made with clinically proven ingredients for active lifestyles.",
   body: "Sparkling Orange Celsius Essentials 270 mg",
+  schemaSeed: true,
   images: {
     'img[src*="/Orange-supp.png"]': [
       {

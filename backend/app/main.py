@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import router
 from app.core.config import Settings, get_settings
+from app.core.rate_limit import InMemoryRateLimiter
 from app.data.catalog import CATALOG
 from app.db.database import Database
 from app.models.product import CanonicalProductSnapshot
@@ -40,6 +41,7 @@ def build_product_service(settings: Settings) -> ProductService:
             base_url=settings.brightdata_api_base_url,
             collector_ids=settings.brightdata_collectors,
             product_urls=_fixture_source_urls(fixture_provider),
+            product_catalog={product.id: product for product in CATALOG},
             trigger_path=settings.brightdata_trigger_path,
             poll_path=settings.brightdata_poll_path,
             output_path=settings.brightdata_output_path,
@@ -47,7 +49,7 @@ def build_product_service(settings: Settings) -> ProductService:
             max_poll_attempts=settings.brightdata_max_poll_attempts,
         )
     )
-    return ProductService(repository, provider)
+    return ProductService(repository, provider, catalog=CATALOG)
 
 
 def _fixture_source_urls(provider: FixtureProductProvider) -> dict[str, str]:
@@ -76,6 +78,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             refresh_existing=configured_settings.data_provider == "fixture",
         )
         app.state.product_service = service
+        app.state.settings = configured_settings
+        app.state.rate_limiter = InMemoryRateLimiter()
         regulatory_service = RegulatoryService(
             RegulatoryRepository(service.repository.database), service.repository
         )

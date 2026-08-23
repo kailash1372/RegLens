@@ -36,6 +36,7 @@ def _snapshot(caffeine: float) -> CanonicalProductSnapshot:
         product_name="CELSIUS Sparkling Orange",
         product_line="CELSIUS",
         flavor="Sparkling Orange",
+        serving_size={"value": 12, "unit": "fl oz", "ml": 355},
         caffeine_mg=caffeine,
         source={
             "url": "https://www.celsius.com/products/celsius/sparkling-orange/",
@@ -133,5 +134,9 @@ def test_regulatory_provenance_and_findings_endpoints(tmp_path: Path) -> None:
             "recall-match-specificity",
         }
         assert cards["canada-caffeine-comparison"]["evidence_status"] == "VERIFIED"
-        assert len(cards["canada-caffeine-comparison"]["related_product_ids"]) == 4
+        assert len(cards["canada-caffeine-comparison"]["related_product_ids"]) == 3
+        assert (
+            "reign-orange-dreamsicle"
+            not in cards["canada-caffeine-comparison"]["related_product_ids"]
+        )
         assert cards["fda-red-three-status-change"]["source_url"].startswith("https://www.fda.gov/")

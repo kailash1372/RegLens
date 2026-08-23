@@ -115,6 +115,32 @@ def test_ask_endpoint_has_safe_offline_fallback(tmp_path: Path) -> None:
         assert body["model"] is None
 
 
+def test_ask_rejects_llm_answer_with_fabricated_citation(tmp_path: Path) -> None:
+    class FabricatingClient:
+        configured = True
+        model = "test-model"
+
+        def complete(self, *_: object, **__: object) -> str:
+            return "Unsupported conclusion [fabricated-source]"
+
+    settings = Settings(
+        _env_file=None,
+        REGLENS_DATA_PROVIDER="fixture",
+        REGLENS_DATABASE_PATH=tmp_path / "fabricated-citation.db",
+        OPENROUTER_API_KEY=None,
+    )
+    with TestClient(create_app(settings)) as client:
+        client.app.state.ask_service.client = FabricatingClient()
+        response = client.post(
+            "/api/ask", json={"question": "Is Celsius okay for children to drink?"}
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["answer_mode"] == "deterministic"
+    assert "fabricated-source" not in body["answer"]
+
+
 def test_ask_threshold_answer_is_driven_by_verified_findings(tmp_path: Path) -> None:
     """Catalog threshold answers include only products above the stored verified rule."""
     settings = Settings(
@@ -182,6 +208,14 @@ def test_ask_resolves_new_brand_and_market_variant_without_llm(tmp_path: Path) -
             "/api/ask",
             json={"question": "Compare Fanta Orange in Canada and Saudi Arabia."},
         ).json()
+        market_families = client.post(
+            "/api/ask",
+            json={"question": "Are there products whose formulations differ between markets?"},
+        ).json()
+        unsupported_europe = client.post(
+            "/api/ask",
+            json={"question": "Is this product legal in Europe?"},
+        ).json()
 
     assert fanta["products"] == ["fanta-orange-ca"]
     assert fanta["product_facts"][0]["market"] == "CA"
@@ -189,6 +223,9 @@ def test_ask_resolves_new_brand_and_market_variant_without_llm(tmp_path: Path) -
     assert "500 ml" in comparison["answer"]
     assert "100 ml" in comparison["answer"]
     assert "Serving bases differ" in comparison["answer"]
+    assert set(market_families["products"]) == {"fanta-orange-ca", "fanta-orange-sa"}
+    assert unsupported_europe["intent"]["jurisdictions"] == ["EU"]
+    assert unsupported_europe["evidence"] == []
 
 
 def test_ask_follow_up_reuses_explicit_product_context(tmp_path: Path) -> None:

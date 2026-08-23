@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import UTC, datetime, timedelta
 
 from app.db.database import Database
 from app.models.health import ScraperHealth, ScraperStatus
@@ -73,17 +73,33 @@ class ProductRepository:
         *,
         scraper_assets: ScraperAssets | None = None,
         collector_id: str | None = None,
+        status: ScraperStatus = ScraperStatus.HEALTHY,
     ) -> None:
-        """Append a schema-valid snapshot; never overwrite prior successful data."""
+        """Persist a valid snapshot, avoiding duplicate fixture refresh rows."""
         payload = snapshot.model_dump(mode="json")
         with self.database.connect() as connection:
-            connection.execute(
-                (
-                    "INSERT INTO product_snapshots(product_id, payload_json, scraped_at) "
-                    "VALUES (?, ?, ?)"
-                ),
-                (product_id, json.dumps(payload), snapshot.source.scraped_at.isoformat()),
-            )
+            payload_json = json.dumps(payload, sort_keys=True)
+            latest = connection.execute(
+                """
+                SELECT payload_json, scraped_at
+                FROM product_snapshots
+                WHERE product_id = ?
+                ORDER BY id DESC LIMIT 1
+                """,
+                (product_id,),
+            ).fetchone()
+            if (
+                latest is None
+                or latest["payload_json"] != payload_json
+                or latest["scraped_at"] != snapshot.source.scraped_at.isoformat()
+            ):
+                connection.execute(
+                    (
+                        "INSERT INTO product_snapshots(product_id, payload_json, scraped_at) "
+                        "VALUES (?, ?, ?)"
+                    ),
+                    (product_id, payload_json, snapshot.source.scraped_at.isoformat()),
+                )
             connection.execute(
                 """
                 INSERT INTO scraper_health(
@@ -103,7 +119,7 @@ class ProductRepository:
                     product_id,
                     str(snapshot.source.url),
                     collector_id,
-                    ScraperStatus.HEALTHY.value,
+                    status.value,
                     snapshot.source.scraped_at.isoformat(),
                 ),
             )
@@ -129,9 +145,12 @@ class ProductRepository:
         error: str,
         invalid_output: bool = False,
         collector_id: str | None = None,
+        status: ScraperStatus | None = None,
     ) -> None:
         """Expose a failed refresh while deliberately retaining the active snapshot."""
-        status = ScraperStatus.INVALID_OUTPUT if invalid_output else ScraperStatus.REFRESH_FAILED
+        resolved_status = status or (
+            ScraperStatus.INVALID_OUTPUT if invalid_output else ScraperStatus.REFRESH_FAILED
+        )
         with self.database.connect() as connection:
             connection.execute(
                 """
@@ -148,7 +167,7 @@ class ProductRepository:
                 (
                     product_id,
                     collector_id,
-                    status.value,
+                    resolved_status.value,
                     0 if invalid_output else None,
                     error[:500],
                 ),
@@ -304,17 +323,40 @@ class ProductRepository:
                 ORDER BY p.display_name
                 """
             ).fetchall()
-        return [
-            ScraperHealth(
-                product_id=row["product_id"],
-                source_url=row["source_url"],
-                collector_id=row["collector_id"],
-                status=row["status"] or ScraperStatus.NOT_CONFIGURED,
-                schema_valid=bool(row["schema_valid"]) if row["schema_valid"] is not None else None,
-                last_successful_refresh=datetime.fromisoformat(row["last_successful_refresh"])
+        health: list[ScraperHealth] = []
+        now = datetime.now(UTC)
+        for row in rows:
+            refreshed_at = (
+                datetime.fromisoformat(row["last_successful_refresh"])
                 if row["last_successful_refresh"]
-                else None,
-                last_error=row["last_error"],
+                else None
             )
-            for row in rows
-        ]
+            if refreshed_at is not None and refreshed_at.tzinfo is None:
+                refreshed_at = refreshed_at.replace(tzinfo=UTC)
+            age_seconds = (
+                max(0, int((now - refreshed_at).total_seconds()))
+                if refreshed_at is not None
+                else None
+            )
+            health_status = row["status"] or ScraperStatus.NOT_CONFIGURED
+            if (
+                health_status == ScraperStatus.HEALTHY
+                and age_seconds is not None
+                and age_seconds > int(timedelta(days=7).total_seconds())
+            ):
+                health_status = ScraperStatus.STALE
+            health.append(
+                ScraperHealth(
+                    product_id=row["product_id"],
+                    source_url=row["source_url"],
+                    collector_id=row["collector_id"],
+                    status=health_status,
+                    schema_valid=bool(row["schema_valid"])
+                    if row["schema_valid"] is not None
+                    else None,
+                    last_successful_refresh=refreshed_at,
+                    snapshot_age_seconds=age_seconds,
+                    last_error=row["last_error"],
+                )
+            )
+        return health

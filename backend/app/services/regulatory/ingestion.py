@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from hashlib import sha256
 from html.parser import HTMLParser
 
 import httpx
@@ -28,6 +29,7 @@ class RegulatorySourceDefinition:
     source_type: str
     preserved_content: str
     evidence_text: str
+    evidence_anchor: str | None = None
 
 
 CORPUS_RETRIEVED_AT = datetime(2026, 8, 23, tzinfo=UTC)
@@ -53,6 +55,7 @@ SOURCE_DEFINITIONS = (
             "CEDs are not recommended for those under 14 years old, those who are "
             "pregnant or breastfeeding, or people sensitive to caffeine."
         ),
+        evidence_anchor="In Canada, CEDs can contain a maximum of 180 mg of caffeine per serving.",
     ),
     RegulatorySourceDefinition(
         id="health-canada-permitted-supplemental-ingredients",
@@ -75,6 +78,9 @@ SOURCE_DEFINITIONS = (
             "Health Canada's incorporated-by-reference list of permitted supplemental "
             "ingredients and their conditions of use."
         ),
+        evidence_anchor=(
+            "The List of Permitted Supplemental Ingredients is incorporated by reference"
+        ),
     ),
     RegulatorySourceDefinition(
         id="fda-color-additives",
@@ -94,6 +100,7 @@ SOURCE_DEFINITIONS = (
             "FDA regulatory information and inventories for color-additive approval, "
             "permitted uses, restrictions, and certification."
         ),
+        evidence_anchor="are subject to FDA approval before they may be used in food",
     ),
     RegulatorySourceDefinition(
         id="fda-fdc-red-no-3",
@@ -114,6 +121,7 @@ SOURCE_DEFINITIONS = (
             "FDA revoked the authorizations for FD&C Red No. 3 in food and ingested "
             "drugs, with a January 15, 2027 food-manufacturer reformulation deadline."
         ),
+        evidence_anchor="On January 15, 2025, FDA issued an order to revoke the authorizations",
     ),
     RegulatorySourceDefinition(
         id="canada-recalls-open-data",
@@ -131,6 +139,9 @@ SOURCE_DEFINITIONS = (
         evidence_text=(
             "Government of Canada metadata for the official, daily-updated Recalls and "
             "Safety Alerts open dataset."
+        ),
+        evidence_anchor=(
+            "official Government of Canada centralized website for recalls and safety alerts"
         ),
     ),
 )
@@ -207,6 +218,24 @@ class RegulatorySourceIngestor:
             if current is None:
                 raise
             return current
+        if definition.evidence_anchor and not _contains_anchor(
+            content,
+            definition.evidence_anchor,
+        ):
+            self.repository.record_missing_evidence_anchor(
+                source_id,
+                "Authoritative source no longer contains the required evidence anchor; "
+                "last-known-good evidence was retained and dependent rules need review.",
+            )
+            current = next(
+                (item for item in self.repository.list_sources() if item.id == source_id),
+                None,
+            )
+            if current is None:
+                raise RegulatorySourceRefreshError(
+                    "No last-known-good evidence exists for the missing anchor."
+                )
+            return current
         source = _source_from_definition(
             definition,
             content=content,
@@ -282,4 +311,11 @@ def _source_from_definition(
         source_type=definition.source_type,
         content=content,
         evidence_text=definition.evidence_text,
+        evidence_anchor=definition.evidence_anchor,
+        content_hash=sha256(content.encode("utf-8")).hexdigest(),
     )
+
+
+def _contains_anchor(content: str, anchor: str) -> bool:
+    """Compare human-readable evidence anchors despite insignificant whitespace drift."""
+    return " ".join(anchor.split()).casefold() in " ".join(content.split()).casefold()

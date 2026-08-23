@@ -161,9 +161,11 @@ const name = scope ? textOf(query("h1, h2, h3, h4", scope)[0]) : "";
 const isTargetProduct = exactTargetUrl(url) && /^fanta orange$/i.test(name);
 const facts = isTargetProduct ? nutritionFacts(scope) : [];
 const scopeText = textOf(scope);
-const servingMatch = scopeText.match(/\bper\s+(\d+(?:\.\d+)?)\s*(ml|mL|l|g)\b/i);
-const serving = servingMatch
-  ? { value: numberValue(servingMatch[1]), unit: servingMatch[2].toLowerCase(), ml: /ml/i.test(servingMatch[2]) ? numberValue(servingMatch[1]) : null }
+const servingMatch = scopeText.match(/\bper\s+(-?\d+(?:\.\d+)?)\s*(ml|mL|l|g)\b/i);
+const servingValue = servingMatch ? numberValue(servingMatch[1]) : null;
+const hasValidServing = servingValue !== null && servingValue > 0;
+const serving = servingMatch && hasValidServing
+  ? { value: servingValue, unit: servingMatch[2].toLowerCase(), ml: /ml/i.test(servingMatch[2]) ? servingValue : null }
   : { value: null, unit: null, ml: null };
 const brandElement = typeof document !== "undefined" ? document.querySelector("meta[name='brand']") : null;
 const brand = clean(brandElement && brandElement.getAttribute("content")) || null;

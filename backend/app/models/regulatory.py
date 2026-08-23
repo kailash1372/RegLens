@@ -35,6 +35,8 @@ class RegulatorySource(BaseModel):
     source_type: str
     content: str
     evidence_text: str
+    evidence_anchor: str | None = None
+    content_hash: str | None = None
     status: RegulatorySourceStatus = RegulatorySourceStatus.CURRENT
     last_error: str | None = None
 

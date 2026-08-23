@@ -48,7 +48,11 @@ class AskService:
         passages = (
             []
             if catalog_metric_question
-            else self.retriever.search(" ".join(intent.topics) or question)
+            else self.retriever.search(
+                " ".join(intent.topics) or question,
+                jurisdictions=intent.jurisdictions,
+                topics=intent.topics,
+            )
         )
         rules = self.regulatory.list_rules()
         sources = self.regulatory.list_sources()
@@ -78,6 +82,7 @@ class AskService:
             sources,
             rules,
             include_rule_sources=include_rule_sources,
+            jurisdictions=intent.jurisdictions,
         )
         packet = self._packet(
             question,
@@ -203,9 +208,18 @@ class AskService:
             )
             if term in lower
         ]
-        jurisdictions = (
-            ["CA"] if any(term in lower for term in ("canada", "canadian")) else ["US", "CA"]
-        )
+        jurisdiction_terms = {
+            "CA": ("canada", "canadian"),
+            "EU": ("europe", "european union", " eu "),
+            "SA": ("saudi arabia", "saudi"),
+            "IN": ("india", "indian"),
+            "US": ("united states", "u s formulation", "american formulation"),
+        }
+        jurisdictions = [
+            jurisdiction
+            for jurisdiction, terms in jurisdiction_terms.items()
+            if any(term in lower for term in terms)
+        ] or ["US", "CA"]
         return QueryIntent(
             products=[],
             topics=list(dict.fromkeys(topics or ["regulatory"])),
@@ -226,6 +240,18 @@ class AskService:
         selected = [product for product in all_products if _mentions_product(terms, product)]
         if selected:
             return _filter_explicit_market(selected, question)
+        if _asks_about_market_formulations(question):
+            family_counts: dict[str, int] = {}
+            for product in all_products:
+                if product.canonical_family:
+                    family_counts[product.canonical_family] = (
+                        family_counts.get(product.canonical_family, 0) + 1
+                    )
+            return [
+                product
+                for product in all_products
+                if product.canonical_family and family_counts[product.canonical_family] > 1
+            ]
         if any(
             word in question.lower() for word in ("which", "catalog", "our drinks", "these brands")
         ):
@@ -243,6 +269,7 @@ class AskService:
         rules: list[RegulatoryRule],
         *,
         include_rule_sources: bool,
+        jurisdictions: list[str],
     ) -> list[dict[str, str]]:
         source_by_id = {source.id: source for source in sources}
         evidence: list[dict[str, str]] = []
@@ -259,7 +286,12 @@ class AskService:
             )
         for rule in rules if include_rule_sources else []:
             source = source_by_id.get(rule.source_id)
-            if not source or any(item["source_id"] == source.id for item in evidence):
+            if (
+                not source
+                or source.jurisdiction.upper() not in {item.upper() for item in jurisdictions}
+                or source.status.value != "current"
+                or any(item["source_id"] == source.id for item in evidence)
+            ):
                 continue
             evidence.append(
                 {
@@ -304,13 +336,14 @@ class AskService:
             "conclusion in Canada. Cite evidence as [source_id]."
         )
         try:
-            return self.client.complete(
+            answer = self.client.complete(
                 [
                     {"role": "system", "content": system},
                     {"role": "user", "content": json.dumps(packet)},
                 ],
                 max_tokens=900,
             )
+            return answer if _has_supported_citations(answer, packet) else None
         except OpenRouterError:
             return None
 
@@ -489,6 +522,7 @@ def _filter_explicit_market(
     normalized = _normalize_search_text(question)
     market_terms = {
         "CA": ("canada", "canadian"),
+        "EU": ("europe", "european union", " eu "),
         "SA": ("saudi arabia", "saudi"),
         "IN": ("india", "indian"),
         "US": ("united states", "u s formulation", "american formulation"),
@@ -502,6 +536,14 @@ def _filter_explicit_market(
         return products
     filtered = [product for product in products if product.market.upper() in requested]
     return filtered or products
+
+
+def _asks_about_market_formulations(question: str) -> bool:
+    """Recognize catalog questions about product families sold in multiple markets."""
+    lower = f" {question.casefold()} "
+    return "formulation" in lower and any(
+        term in lower for term in ("market", "countr", "differ", "same product")
+    )
 
 
 def _normalize_search_text(value: str) -> str:
@@ -554,3 +596,19 @@ def _is_catalog_metric_question(question: str) -> bool:
     return "caffeine" in lower and any(
         term in lower for term in ("least", "lowest", "minimum", "smallest")
     )
+
+
+def _has_supported_citations(answer: str, packet: dict[str, object]) -> bool:
+    """Accept LLM prose only when every evidence citation names a supplied source."""
+    evidence = packet.get("evidence", [])
+    if not isinstance(evidence, list):
+        return False
+    allowed = {
+        item.get("source_id")
+        for item in evidence
+        if isinstance(item, dict) and isinstance(item.get("source_id"), str)
+    }
+    cited = set(re.findall(r"\[([A-Za-z0-9][A-Za-z0-9_.:-]*)\]", answer))
+    if not allowed:
+        return not cited
+    return bool(cited) and cited.issubset(allowed)

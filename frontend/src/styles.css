@@ -114,15 +114,18 @@ nav button:hover, nav button.active { background: #e3ece4; color: #0a5e45; }
 .passport-subtitle { color: #5d6c63; margin: 0; text-transform: capitalize; }
 .passport-actions { max-width: 240px; text-align: right; }
 .passport-actions p { color: #68776d; font-size: .74rem; line-height: 1.45; margin: 9px 0 0; }
-.inline-error, .error-view { background: #fff5e9; border: 1px solid #edd3ae; border-radius: 10px; color: #714e1e; margin-bottom: 22px; padding: 14px 16px; }
+.inline-error, .inline-success, .error-view { border-radius: 10px; margin-bottom: 22px; padding: 14px 16px; }
+.inline-error, .error-view { background: #fff5e9; border: 1px solid #edd3ae; color: #714e1e; }
+.inline-success { background: #e8f3e9; border: 1px solid #bfd7c2; color: #245d3c; }
 .error-view { max-width: 620px; }
 .error-view p { margin-bottom: 12px; }
-.source-strip { background: #e5eee5; display: grid; grid-template-columns: 2fr .7fr 1.2fr; margin-bottom: 55px; }
+.source-strip { background: #e5eee5; display: grid; grid-template-columns: 1.7fr .8fr 1.1fr 1.1fr; margin-bottom: 55px; }
 .source-strip div { border-right: 1px solid #cbd8cc; display: grid; gap: 5px; padding: 16px 18px; }
 .source-strip div:last-child { border-right: 0; }
 .source-strip span, .health-row span { color: #607268; font-size: .67rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 .source-strip a, .source-strip strong { font-size: .86rem; font-weight: 750; }
 .passport-section { border-top: 1px solid #d7ded5; padding: 38px 0 42px; }
+.snapshot-badge { margin: 14px 0 0; }
 .section-title { margin-bottom: 25px; max-width: 650px; }
 .section-title .eyebrow { margin-bottom: 9px; }
 .section-title h3 { font-size: 1.75rem; margin-bottom: 8px; }
@@ -181,6 +184,7 @@ nav button:hover, nav button.active { background: #e3ece4; color: #0a5e45; }
 .compare-placeholder h3 { margin-bottom: 8px; }
 .compare-placeholder p { font-size: .87rem; margin: 0; }
 .comparison-table-wrap { border: 1px solid #d7dfd6; overflow-x: auto; }
+.compare-mobile-note { color: #627267; display: none; font-size: .74rem; margin: 0; padding: 11px 15px; }
 table { border-collapse: collapse; min-width: 680px; width: 100%; }
 th, td { border-bottom: 1px solid #e1e6df; padding: 15px; text-align: left; }
 thead th { background: #e7eee6; font-size: .79rem; vertical-align: bottom; }
@@ -250,7 +254,7 @@ thead small { display: block; font-weight: 400; margin-top: 5px; }
 
 .health-page { max-width: 1120px; }
 .health-list { display: grid; gap: 10px; margin-top: 35px; }
-.health-row { background: #fafbf8; border: 1px solid #d9e1d8; display: grid; gap: 15px; grid-template-columns: 2.2fr repeat(4, 1fr); padding: 17px; }
+.health-row { background: #fafbf8; border: 1px solid #d9e1d8; display: grid; gap: 15px; grid-template-columns: 2.2fr repeat(5, 1fr); padding: 17px; }
 .health-row .eyebrow { font-size: .6rem; margin-bottom: 6px; }
 .health-row h3 { font-size: .88rem; margin: 0; }
 .health-row > div:not(:first-child) { display: grid; gap: 8px; align-content: start; }
@@ -258,6 +262,7 @@ thead small { display: block; font-weight: 400; margin-top: 5px; }
 .status { border-radius: 999px; font-size: .68rem !important; padding: 4px 8px; width: fit-content; }
 .status-healthy { background: #dcefe0; color: #12643c; }
 .status-stale, .status-not-configured { background: #eef0eb; color: #657264; }
+.status-fixture-cached { background: #e9f0ea; color: #276046; }
 .status-invalid-output, .status-refresh-failed { background: #fff1dc; color: #8a5a18; }
 .health-error { background: #fff4e8; color: #7a541e; font-size: .75rem; grid-column: 1 / -1; margin: 0; padding: 8px 10px; }
 .health-explainer { background: #e8efe7; margin-top: 24px; max-width: 800px; padding: 21px; }
@@ -297,6 +302,7 @@ footer p { margin: 0; max-width: 550px; text-align: right; }
   .regulatory-section { margin: 0 -18px; padding-left: 18px; padding-right: 18px; }
   .principles { gap: 20px; grid-template-columns: 1fr; margin-top: 45px; }
   .health-row { grid-template-columns: 1fr 1fr; }
+  .compare-mobile-note { display: block; }
   .health-row > div:first-child { grid-column: 1 / -1; }
   footer { flex-direction: column; gap: 7px; }
   footer p { text-align: left; }

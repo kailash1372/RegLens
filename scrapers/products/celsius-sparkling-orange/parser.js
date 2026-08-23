@@ -156,9 +156,7 @@ return {
   product_line: target ? productLine : null,
   flavor: target ? flavor : null,
   // Serving size and nutrition are printed only on the label image.
-  serving_size: input.schema_seed
-    ? { value: 0, unit: "fl oz", ml: 0 }
-    : { value: null, unit: null, ml: null },
+  serving_size: { value: null, unit: null, ml: null },
   caffeine_mg: null,
   calories: null,
   sugar_g: null,

@@ -172,6 +172,12 @@ REGLENS_DATABASE_PATH=backend/data/reglens.db
 OPENROUTER_API_KEY=
 OPENROUTER_MODEL=stealth/ox-alpha
 
+REGLENS_RATE_LIMIT_ENABLED=true
+REGLENS_RATE_LIMIT_WINDOW_SECONDS=60
+REGLENS_ASK_RATE_LIMIT=20
+REGLENS_PRODUCT_REFRESH_RATE_LIMIT=6
+REGLENS_SOURCE_REFRESH_RATE_LIMIT=2
+
 BRIGHTDATA_API_TOKEN=
 BRIGHTDATA_API_BASE_URL=https://api.brightdata.com
 BRIGHTDATA_COLLECTOR_ALANI=
@@ -195,6 +201,11 @@ local response. With a key, it uses OpenRouter Chat Completions at
 `https://openrouter.ai/api/v1/chat/completions` with `stealth/ox-alpha` by
 default. Product facts and rule results are assembled before synthesis; the LLM
 does not create regulatory rules.
+
+Ask, product-refresh, and regulatory-source-refresh endpoints use configurable
+per-client, process-local rate limits to bound accidental provider spend. A
+multi-worker public deployment should also enforce shared limits at its hosting
+edge.
 
 ## Bright Data setup
 

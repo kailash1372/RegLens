@@ -5,7 +5,7 @@ const fs = require("node:fs");
 const parser = fs.readFileSync(__dirname + "/parser.js", "utf8");
 new Function("input", parser);
 
-function run({ url, name, main, info, warning, body, images = {} }) {
+function run({ url, name, main, info, warning, body, images = {}, schemaSeed = false }) {
   const selectors = {
     ".product__info-container .product__title h1": name,
     ".product__info-container": info,
@@ -24,7 +24,7 @@ function run({ url, name, main, info, warning, body, images = {} }) {
       return images[selector] || [];
     },
   };
-  return new Function("input", parser)({ url });
+  return new Function("input", parser)({ url, schema_seed: schemaSeed });
 }
 
 const target = run({
@@ -69,6 +69,7 @@ const target = run({
       },
     ],
   },
+  schemaSeed: true,
 });
 
 assert.equal(target.product_name, "C4 Performance Energy® Frozen Bombsicle");

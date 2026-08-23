@@ -9,6 +9,7 @@ from app.models.ask import AskResult, ChatHistoryMessage
 from app.models.health import ScraperHealth
 from app.models.ingredient import NormalizedIngredient
 from app.models.product import ProductRecord, ProductSummary
+from app.models.refresh import ProductRefreshOutcome
 from app.models.regulatory import (
     RecallRecord,
     RegulatoryDiscovery,
@@ -31,6 +32,26 @@ def get_product_service(request: Request) -> ProductService:
 def get_regulatory_service(request: Request) -> RegulatoryService:
     """Resolve the source-grounded regulatory service."""
     return request.app.state.regulatory_service
+
+
+def enforce_external_operation_limit(request: Request, operation: str, limit: int) -> None:
+    """Bound externally billed work per client without exposing provider credentials."""
+    settings = request.app.state.settings
+    if not settings.rate_limit_enabled:
+        return
+    client_id = request.client.host if request.client else "unknown"
+    decision = request.app.state.rate_limiter.check(
+        client_id=client_id,
+        operation=operation,
+        limit=limit,
+        window_seconds=settings.rate_limit_window_seconds,
+    )
+    if not decision.allowed:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Too many externally backed requests. Try again shortly.",
+            headers={"Retry-After": str(decision.retry_after_seconds)},
+        )
 
 
 @router.get("/products", response_model=list[ProductSummary])
@@ -96,15 +117,20 @@ def get_normalized_product_ingredients(
     return service.repository.list_ingredients(product_id)
 
 
-@router.post("/products/{product_id}/refresh", response_model=ProductRecord)
-def refresh_product(request: Request, product_id: str) -> ProductRecord:
+@router.post("/products/{product_id}/refresh", response_model=ProductRefreshOutcome)
+def refresh_product(request: Request, product_id: str) -> ProductRefreshOutcome:
     """Refresh a product while preserving its last valid snapshot on failures."""
+    settings = request.app.state.settings
+    enforce_external_operation_limit(
+        request, "product-refresh", settings.product_refresh_rate_limit
+    )
     service = get_product_service(request)
     if service.repository.get_product(product_id) is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
-    product = service.refresh(product_id)
-    get_regulatory_service(request).evaluate_product(product)
-    return product
+    outcome = service.refresh_with_outcome(product_id)
+    if outcome.accepted:
+        get_regulatory_service(request).evaluate_product(outcome.product)
+    return outcome
 
 
 @router.get("/scrapers/health", response_model=list[ScraperHealth])
@@ -122,6 +148,8 @@ def list_regulatory_sources(request: Request) -> list[RegulatorySource]:
 @router.post("/sources/refresh", response_model=list[RegulatorySource])
 def refresh_regulatory_sources(request: Request) -> list[RegulatorySource]:
     """Refresh the configured primary corpus while preserving last-known-good text."""
+    settings = request.app.state.settings
+    enforce_external_operation_limit(request, "source-refresh", settings.source_refresh_rate_limit)
     return get_regulatory_service(request).refresh_sources()
 
 
@@ -162,6 +190,8 @@ class AskRequest(BaseModel):
 @router.post("/ask", response_model=AskResult)
 def ask_reglens(request: Request, payload: AskRequest) -> AskResult:
     """Answer from stored facts and evidence, using OpenRouter only when configured."""
+    settings = request.app.state.settings
+    enforce_external_operation_limit(request, "ask", settings.ask_rate_limit)
     return request.app.state.ask_service.ask(
         payload.question,
         history=payload.history,

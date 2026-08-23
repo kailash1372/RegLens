@@ -66,6 +66,8 @@ CREATE TABLE IF NOT EXISTS regulatory_sources (
     retrieved_at TEXT NOT NULL,
     source_type TEXT NOT NULL,
     content TEXT NOT NULL DEFAULT '',
+    evidence_anchor TEXT,
+    content_hash TEXT,
     status TEXT NOT NULL DEFAULT 'current',
     last_error TEXT,
     evidence_text TEXT NOT NULL
@@ -156,6 +158,8 @@ class Database:
             }
             migrations = {
                 "content": "TEXT NOT NULL DEFAULT ''",
+                "evidence_anchor": "TEXT",
+                "content_hash": "TEXT",
                 "status": "TEXT NOT NULL DEFAULT 'current'",
                 "last_error": "TEXT",
             }

@@ -16,6 +16,7 @@ class ScraperStatus(StrEnum):
     INVALID_OUTPUT = "Invalid output"
     REFRESH_FAILED = "Refresh failed"
     NOT_CONFIGURED = "Not configured"
+    FIXTURE_CACHED = "Fixture cached"
 
 
 class ScraperHealth(BaseModel):
@@ -27,4 +28,5 @@ class ScraperHealth(BaseModel):
     status: ScraperStatus
     schema_valid: bool | None = None
     last_successful_refresh: datetime | None = None
+    snapshot_age_seconds: int | None = None
     last_error: str | None = None

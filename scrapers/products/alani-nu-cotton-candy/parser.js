@@ -126,15 +126,17 @@ const servingSizeText = cleanText(
     .text_sane(),
 );
 const servingSizeMatch = servingSizeText?.match(
-  /([\d.]+)\s*fl\s*oz\s*\(([\d.]+)\s*mL\)/i,
+  /(-?[\d.]+)\s*fl\s*oz\s*\((-?[\d.]+)\s*mL\)/i,
 );
-const serving_size = input.schema_seed
-  ? { value: 0, unit: "fl oz", ml: 0 }
-  : {
-      value: servingSizeMatch ? Number.parseFloat(servingSizeMatch[1]) : null,
-      unit: servingSizeMatch ? "fl oz" : null,
-      ml: servingSizeMatch ? Number.parseFloat(servingSizeMatch[2]) : null,
-    };
+const servingValue = servingSizeMatch ? Number.parseFloat(servingSizeMatch[1]) : null;
+const servingMl = servingSizeMatch ? Number.parseFloat(servingSizeMatch[2]) : null;
+const hasValidServing =
+  servingValue !== null && servingMl !== null && servingValue > 0 && servingMl > 0;
+const serving_size = {
+  value: hasValidServing ? servingValue : null,
+  unit: hasValidServing ? "fl oz" : null,
+  ml: hasValidServing ? servingMl : null,
+};
 
 const detailsText = cleanText(
   $(".product-benefits_cel__panel-details-wrapper").text(),

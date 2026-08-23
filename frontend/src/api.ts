@@ -2,6 +2,7 @@ import type {
   AskResponse,
   ChatHistoryMessage,
   ProductRecord,
+  ProductRefreshOutcome,
   ProductScraperAssets,
   ProductSummary,
   RecallRecord,
@@ -53,8 +54,8 @@ export function compareProducts(ids: string[]): Promise<ProductRecord[]> {
   return request<ProductRecord[]>(`/api/products/compare?${query.toString()}`);
 }
 
-export function refreshProduct(id: string): Promise<ProductRecord> {
-  return request<ProductRecord>(`/api/products/${encodeURIComponent(id)}/refresh`, {
+export function refreshProduct(id: string): Promise<ProductRefreshOutcome> {
+  return request<ProductRefreshOutcome>(`/api/products/${encodeURIComponent(id)}/refresh`, {
     method: "POST",
   });
 }

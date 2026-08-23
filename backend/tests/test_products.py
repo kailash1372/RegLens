@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
 from app.core.config import Settings
 from app.db.database import Database
 from app.main import create_app
+from app.models.health import ScraperStatus
 from app.models.product import CanonicalProductSnapshot, ProductRecord
 from app.repositories.products import ProductRepository
 from fastapi.testclient import TestClient
@@ -89,6 +91,43 @@ def test_canonical_schema_normalizes_numeric_label_values() -> None:
     assert product.nutrition_facts[0].daily_value_percent == 8
 
 
+@pytest.mark.parametrize("field", ["value", "ml"])
+def test_canonical_schema_rejects_non_positive_serving_measurements(field: str) -> None:
+    payload = {
+        "serving_size": {field: 0, "unit": "fl oz"},
+        "source": {
+            "url": "https://example.com/product",
+            "market": "US",
+            "scraped_at": "2026-08-22T12:00:00Z",
+        },
+    }
+
+    with pytest.raises(ValidationError):
+        CanonicalProductSnapshot.model_validate(payload)
+
+
+def test_live_health_becomes_stale_after_seven_days(tmp_path: Path) -> None:
+    database = Database(tmp_path / "stale-health.db")
+    database.initialize()
+    repository = ProductRepository(database)
+    repository.upsert_product(
+        ProductRecord(id="example", display_name="Example", manufacturer="Example")
+    )
+    snapshot = CanonicalProductSnapshot(
+        source={
+            "url": "https://example.com/product",
+            "market": "US",
+            "scraped_at": datetime.now(UTC) - timedelta(days=8),
+        }
+    )
+    repository.save_valid_snapshot("example", snapshot, status=ScraperStatus.HEALTHY)
+
+    health = repository.list_health()[0]
+    assert health.status is ScraperStatus.STALE
+    assert health.snapshot_age_seconds is not None
+    assert health.snapshot_age_seconds >= int(timedelta(days=8).total_seconds())
+
+
 def test_product_catalog_endpoints_use_expanded_fixture_data(tmp_path: Path) -> None:
     """The expanded experience starts without Bright Data or an API key."""
     database = Database(tmp_path / "test.db")
@@ -145,7 +184,7 @@ def test_product_catalog_endpoints_use_expanded_fixture_data(tmp_path: Path) -> 
         assert {item["market"] for item in cross_market.json()} == {"CA", "SA"}
         health = client.get("/api/scrapers/health")
         assert health.status_code == 200
-        assert {item["status"] for item in health.json()} == {"Healthy"}
+        assert {item["status"] for item in health.json()} == {"Fixture cached"}
         celsius_health = next(
             item for item in health.json() if item["product_id"] == "celsius-sparkling-orange"
         )

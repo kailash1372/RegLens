@@ -7,6 +7,9 @@ from pathlib import Path
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+DEFAULT_DATABASE_PATH = PROJECT_ROOT / "backend" / "data" / "reglens.db"
+
 
 class Settings(BaseSettings):
     """Runtime settings for local fixture and future live-provider modes."""
@@ -19,10 +22,21 @@ class Settings(BaseSettings):
 
     data_provider: str = Field(default="fixture", validation_alias="REGLENS_DATA_PROVIDER")
     database_path: Path = Field(
-        default=Path("backend/data/reglens.db"), validation_alias="REGLENS_DATABASE_PATH"
+        default=DEFAULT_DATABASE_PATH, validation_alias="REGLENS_DATABASE_PATH"
     )
     openrouter_api_key: str | None = Field(default=None, validation_alias="OPENROUTER_API_KEY")
     openrouter_model: str = Field(default="stealth/ox-alpha", validation_alias="OPENROUTER_MODEL")
+    rate_limit_enabled: bool = Field(default=True, validation_alias="REGLENS_RATE_LIMIT_ENABLED")
+    rate_limit_window_seconds: int = Field(
+        default=60, ge=1, validation_alias="REGLENS_RATE_LIMIT_WINDOW_SECONDS"
+    )
+    ask_rate_limit: int = Field(default=20, ge=1, validation_alias="REGLENS_ASK_RATE_LIMIT")
+    product_refresh_rate_limit: int = Field(
+        default=6, ge=1, validation_alias="REGLENS_PRODUCT_REFRESH_RATE_LIMIT"
+    )
+    source_refresh_rate_limit: int = Field(
+        default=2, ge=1, validation_alias="REGLENS_SOURCE_REFRESH_RATE_LIMIT"
+    )
     brightdata_api_token: str | None = Field(default=None, validation_alias="BRIGHTDATA_API_TOKEN")
     brightdata_api_base_url: str = Field(
         default="https://api.brightdata.com", validation_alias="BRIGHTDATA_API_BASE_URL"

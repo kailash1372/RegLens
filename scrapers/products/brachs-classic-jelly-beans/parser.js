@@ -147,8 +147,10 @@ const isTargetProduct = exactTargetUrl(url) && /^classic jelly beans$/i.test(nam
 const mainText = textOf(scope);
 const nutritionBlock = textOf(query(".product-detail__nutrition .collapse", scope)[0]);
 const servingMatch = nutritionBlock.match(
-  /serving size\s*:?\s*(\d+(?:\.\d+)?)\s*(pieces?|servings?|g|mg|ml|oz)\b/i,
+  /serving size\s*:?\s*(-?\d+(?:\.\d+)?)\s*(pieces?|servings?|g|mg|ml|oz)\b/i,
 );
+const servingValue = servingMatch ? numberValue(servingMatch[1]) : null;
+const hasValidServing = servingValue !== null && servingValue > 0;
 const facts = nutritionFacts(nutritionBlock);
 const calories = fact(nutritionBlock, ["Calories"]);
 const sugar = fact(nutritionBlock, ["Sugars"]);
@@ -164,8 +166,8 @@ return {
   product_line: isTargetProduct ? name : null,
   flavor: null,
   serving_size: {
-    value: isTargetProduct && servingMatch ? numberValue(servingMatch[1]) : null,
-    unit: isTargetProduct && servingMatch ? clean(servingMatch[2]) : null,
+    value: isTargetProduct && hasValidServing ? servingValue : null,
+    unit: isTargetProduct && hasValidServing ? clean(servingMatch[2]) : null,
     ml: null,
   },
   caffeine_mg: null,

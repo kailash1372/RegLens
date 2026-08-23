@@ -4,7 +4,7 @@ const path = require("node:path");
 
 const source = fs.readFileSync(path.join(__dirname, "parser.js"), "utf8");
 
-function parse({ html, heading, productText, images = [] }) {
+function parse({ html, heading, productText, images = [], schemaSeed = false }) {
   const document = {
     documentElement: { outerHTML: html },
     querySelector(selector) {
@@ -21,7 +21,7 @@ function parse({ html, heading, productText, images = [] }) {
     },
   };
   return new Function("input", "document", "location", source)(
-    { url: "https://bloomnu.com/products/sparkling-energy?variant=44135391101028" },
+    { url: "https://bloomnu.com/products/sparkling-energy?variant=44135391101028", schema_seed: schemaSeed },
     document,
     { href: "https://bloomnu.com/products/sparkling-energy?variant=44135391101028" },
   );
@@ -41,6 +41,7 @@ const target = parse({
       alt: "Raspberry Lemon nutrition label",
     },
   ],
+  schemaSeed: true,
 });
 assert.equal(target.product_name, "Sparkling Energy - Raspberry Lemon");
 assert.equal(target.brand, "Bloom Nutrition");
@@ -49,6 +50,7 @@ assert.equal(target.flavor, "Raspberry Lemon");
 assert.equal(target.caffeine_mg, 180);
 assert.equal(target.calories, 10);
 assert.equal(target.sugar_g, 0);
+assert.notEqual(target.serving_size.value, 0);
 assert.deepEqual(target.ingredients, [
   "Carbonated Water",
   "Natural Flavors (Raspberry, Lemon)",

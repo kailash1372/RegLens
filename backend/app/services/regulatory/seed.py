@@ -5,7 +5,12 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 from app.db.database import Database
-from app.models.regulatory import RecallRecord, RegulatoryRule, VerificationStatus
+from app.models.regulatory import (
+    RecallRecord,
+    RegulatoryRule,
+    RegulatorySourceStatus,
+    VerificationStatus,
+)
 from app.repositories.regulatory import RegulatoryRepository
 from app.services.regulatory.ingestion import seed_regulatory_sources
 
@@ -21,6 +26,8 @@ def seed_regulatory_evidence(database: Database) -> None:
     repository = RegulatoryRepository(database)
     seed_regulatory_sources(repository)
     source_id = "health-canada-caffeinated-energy-drinks"
+    source = next(item for item in repository.list_sources() if item.id == source_id)
+    evidence_is_current = source.status is RegulatorySourceStatus.CURRENT
     repository.upsert_rule(
         RegulatoryRule(
             id="ca-ced-caffeine-max-180mg-serving",
@@ -39,7 +46,11 @@ def seed_regulatory_evidence(database: Database) -> None:
                 "threshold is not by itself evidence of illegal sale in Canada; formulations and "
                 "market authorization must be confirmed separately."
             ),
-            verification_status=VerificationStatus.VERIFIED,
+            verification_status=(
+                VerificationStatus.VERIFIED
+                if evidence_is_current
+                else VerificationStatus.NEEDS_REVIEW
+            ),
             evidence_excerpt=THRESHOLD_EXCERPT,
         )
     )
@@ -57,7 +68,11 @@ def seed_regulatory_evidence(database: Database) -> None:
             applicability_notes=(
                 "Contextual Health Canada guidance; no numeric product comparison is appropriate."
             ),
-            verification_status=VerificationStatus.SUPPORTED,
+            verification_status=(
+                VerificationStatus.SUPPORTED
+                if evidence_is_current
+                else VerificationStatus.NEEDS_REVIEW
+            ),
             evidence_excerpt=UNDER_14_EXCERPT,
         )
     )

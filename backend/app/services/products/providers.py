@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Mapping
-from datetime import UTC, datetime
 from pathlib import Path
 from time import sleep
 from typing import Any
@@ -13,12 +12,17 @@ from typing import Any
 import httpx
 from pydantic import ValidationError
 
-from app.models.product import CanonicalProductSnapshot
+from app.models.product import CanonicalProductSnapshot, ProductRecord
 from app.models.scraper import CollectedProductResult, ScraperAssets
+from app.services.products.identity import catalog_identity_matches
 
 
 class ProductProviderError(RuntimeError):
     """A recoverable source-provider failure that must retain cached data."""
+
+
+class ProductConfigurationError(ProductProviderError):
+    """The live provider cannot run because required configuration is absent."""
 
 
 class InvalidProductPayloadError(ProductProviderError):
@@ -36,6 +40,16 @@ class ProductDataProvider(ABC):
         """Return the configured non-secret collector ID, when the provider has one."""
         del product_id
         return None
+
+    def product_url_for(self, product_id: str) -> str | None:
+        """Return the configured official URL when this provider has one."""
+        del product_id
+        return None
+
+    @property
+    def uses_fixture_data(self) -> bool:
+        """Return whether successful reads are cached fixture reads."""
+        return False
 
 
 class FixtureProductProvider(ProductDataProvider):
@@ -80,6 +94,11 @@ class FixtureProductProvider(ProductDataProvider):
         """Expose the live collector mapped to a cached fixture snapshot."""
         return self.collector_ids.get(product_id)
 
+    @property
+    def uses_fixture_data(self) -> bool:
+        """Identify fixture reads for health reporting."""
+        return True
+
 
 class BrightDataProductProvider(ProductDataProvider):
     """Trigger, poll, normalize, and validate Bright Data collector output."""
@@ -91,6 +110,7 @@ class BrightDataProductProvider(ProductDataProvider):
         base_url: str,
         collector_ids: Mapping[str, str],
         product_urls: Mapping[str, str],
+        product_catalog: Mapping[str, ProductRecord] | None = None,
         trigger_path: str = "/dca/trigger",
         poll_path: str = "/dca/dataset",
         output_path: str = "/dca/dataset",
@@ -103,6 +123,7 @@ class BrightDataProductProvider(ProductDataProvider):
         self.base_url = base_url.rstrip("/")
         self.collector_ids = dict(collector_ids)
         self.product_urls = dict(product_urls)
+        self.product_catalog = dict(product_catalog or {})
         self.trigger_path = trigger_path
         self.poll_path = poll_path
         self.output_path = output_path
@@ -126,6 +147,11 @@ class BrightDataProductProvider(ProductDataProvider):
         try:
             snapshot = CanonicalProductSnapshot.model_validate(normalized)
             _validate_live_identity(snapshot, product_url)
+            expected_product = self.product_catalog.get(product_id)
+            if expected_product and not catalog_identity_matches(expected_product, snapshot):
+                raise InvalidProductPayloadError(
+                    f"Bright Data output does not match catalog product '{product_id}'."
+                )
             assets_payload = raw_product.get("scraper_assets", {})
             return CollectedProductResult(
                 snapshot=snapshot,
@@ -140,18 +166,22 @@ class BrightDataProductProvider(ProductDataProvider):
         """Expose configured collector identity for source-health diagnostics."""
         return self.collector_ids.get(product_id)
 
+    def product_url_for(self, product_id: str) -> str | None:
+        """Expose the exact official URL used as the live collector input."""
+        return self.product_urls.get(product_id)
+
     def _configuration_for(self, product_id: str) -> tuple[str, str]:
         """Validate all local configuration before making a network request."""
         if not self.api_token:
-            raise ProductProviderError("Bright Data API token is not configured.")
+            raise ProductConfigurationError("Bright Data API token is not configured.")
         collector_id = self.collector_ids.get(product_id)
         if not collector_id:
-            raise ProductProviderError(
+            raise ProductConfigurationError(
                 f"Bright Data collector is not configured for '{product_id}'."
             )
         product_url = self.product_urls.get(product_id)
         if not product_url:
-            raise ProductProviderError(
+            raise ProductConfigurationError(
                 f"Official product URL is not configured for '{product_id}'."
             )
         return collector_id, product_url
@@ -281,7 +311,7 @@ def _unwrap_response(response: object) -> object:
 
 
 def _normalize_canonical_payload(payload: Mapping[str, Any], product_url: str) -> dict[str, Any]:
-    """Fill canonical null/default shapes and safely derive only source provenance."""
+    """Fill canonical null shapes without fabricating live provenance."""
     canonical_fields = {
         "brand",
         "product_name",
@@ -317,9 +347,6 @@ def _normalize_canonical_payload(payload: Mapping[str, Any], product_url: str) -
         normalized["serving_size"].setdefault(field, None)
     source = normalized.get("source")
     normalized["source"] = source if isinstance(source, dict) else {}
-    normalized["source"].setdefault("url", product_url)
-    normalized["source"].setdefault("market", "US")
-    normalized["source"].setdefault("scraped_at", datetime.now(UTC).isoformat())
     return normalized
 
 

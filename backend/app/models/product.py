@@ -11,9 +11,9 @@ from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 class ServingSize(BaseModel):
     """Serving amount as stated by the manufacturer."""
 
-    value: float | None = Field(default=None, ge=0)
+    value: float | None = Field(default=None, gt=0)
     unit: str | None = None
-    ml: float | None = Field(default=None, ge=0)
+    ml: float | None = Field(default=None, gt=0)
 
 
 class NutritionFact(BaseModel):
@@ -51,6 +51,13 @@ class CanonicalProductSnapshot(BaseModel):
     warnings: list[str] = Field(default_factory=list)
     claims: list[str] = Field(default_factory=list)
     source: ProductSource
+
+    @property
+    def caffeine_basis_available(self) -> bool:
+        """Return whether a numeric caffeine value has a stated serving basis."""
+        return self.caffeine_mg is None or (
+            self.serving_size.value is not None and bool(self.serving_size.unit)
+        )
 
     @field_validator("ingredients", "warnings", "claims")
     @classmethod

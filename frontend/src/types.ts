@@ -114,13 +114,22 @@ export interface ProductRecord {
   recalls?: RecallRecord[];
 }
 
+export interface ProductRefreshOutcome {
+  product: ProductRecord;
+  accepted: boolean;
+  served_cached: boolean;
+  status: ScraperHealth["status"];
+  error: string | null;
+}
+
 export interface ScraperHealth {
   product_id: string;
   source_url: string | null;
   collector_id: string | null;
-  status: "Healthy" | "Stale" | "Invalid output" | "Refresh failed" | "Not configured";
+  status: "Healthy" | "Stale" | "Invalid output" | "Refresh failed" | "Not configured" | "Fixture cached";
   schema_valid: boolean | null;
   last_successful_refresh: string | null;
+  snapshot_age_seconds: number | null;
   last_error: string | null;
 }
 

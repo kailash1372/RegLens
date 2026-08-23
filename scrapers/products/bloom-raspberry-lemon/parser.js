@@ -336,16 +336,14 @@ return {
   product_name: isTargetProduct ? name : null,
   product_line: isTargetProduct ? productLine : null,
   flavor: isTargetProduct ? flavor : null,
-  serving_size: input.schema_seed
-    ? { value: 0, unit: "fl oz", ml: 0 }
-    : {
-        value: isTargetProduct ? numberValue(servingRaw) : null,
-        unit: isTargetProduct ? servingUnit : null,
-        ml:
-          isTargetProduct && servingUnit === "ml"
-            ? numberValue(servingRaw)
-            : null,
-      },
+  serving_size: {
+    value: isTargetProduct ? numberValue(servingRaw) : null,
+    unit: isTargetProduct ? servingUnit : null,
+    ml:
+      isTargetProduct && servingUnit === "ml"
+        ? numberValue(servingRaw)
+        : null,
+  },
   caffeine_mg: isTargetProduct ? caffeine : null,
   calories: isTargetProduct ? calories : null,
   sugar_g: isTargetProduct ? sugar : null,

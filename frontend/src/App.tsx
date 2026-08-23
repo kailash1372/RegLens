@@ -56,6 +56,13 @@ function displayDate(value: string | null | undefined, includeTime = false): str
   }).format(date);
 }
 
+function displaySnapshotAge(seconds: number | null): string {
+  if (seconds === null) return "Not available";
+  if (seconds < 3600) return `${Math.max(1, Math.floor(seconds / 60))} min`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)} hr`;
+  return `${Math.floor(seconds / 86400)} day${seconds < 172800 ? "" : "s"}`;
+}
+
 function marketName(market: string | null | undefined): string {
   return ({ US: "United States", CA: "Canada", SA: "Saudi Arabia", IN: "India" } as Record<string, string>)[market ?? ""] ?? market ?? "Unknown";
 }
@@ -84,6 +91,20 @@ function hasPendingNutritionExtraction(snapshot: ProductSnapshot, assets: Scrape
 
 function statusClass(status: string): string {
   return `status status-${status.toLowerCase().replaceAll(" ", "-")}`;
+}
+
+function visibleHealthStatus(item: ScraperHealth): ScraperHealth["status"] {
+  // A missing collector cannot truthfully be presented as a healthy live source.
+  if (!item.collector_id && (item.status === "Healthy" || item.status === "Stale")) {
+    return "Not configured";
+  }
+  return item.status;
+}
+
+function snapshotMode(health: ScraperHealth | null): string {
+  if (health?.status === "Fixture cached") return "Fixture-cached snapshot";
+  if (health?.collector_id && health.status !== "Not configured") return "Bright Data live snapshot";
+  return "Cached snapshot";
 }
 
 function extractFindings(product: ProductRecord): RegulatoryFinding[] {
@@ -275,7 +296,9 @@ function RecallCard({ recall }: { recall: RecallRecord }) {
 function Passport({ productId, onBack }: { productId: string; onBack: () => void }) {
   const [product, setProduct] = useState<ProductRecord | null>(null);
   const [productAssets, setProductAssets] = useState<ProductScraperAssets | null>(null);
+  const [scraperHealth, setScraperHealth] = useState<ScraperHealth | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [refreshSuccess, setRefreshSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -283,6 +306,15 @@ function Passport({ productId, onBack }: { productId: string; onBack: () => void
     let active = true;
     setLoading(true);
     setError(null);
+    setRefreshSuccess(null);
+    setScraperHealth(null);
+    getScraperHealth()
+      .then((items) => {
+        if (active) setScraperHealth(items.find((item) => item.product_id === productId) ?? null);
+      })
+      .catch(() => {
+        // Product facts remain useful when the optional health endpoint is unavailable.
+      });
     Promise.all([
       getProduct(productId),
       getProductAssets(productId),
@@ -321,8 +353,10 @@ function Passport({ productId, onBack }: { productId: string; onBack: () => void
   async function refresh(): Promise<void> {
     setRefreshing(true);
     setError(null);
+    setRefreshSuccess(null);
     try {
-      const refreshed = await refreshProduct(productId);
+      const outcome = await refreshProduct(productId);
+      const refreshed = outcome.product;
       const [assets, findings] = await Promise.all([getProductAssets(productId), getFindings(productId)]);
       setProduct((current) => ({
         ...refreshed,
@@ -335,6 +369,21 @@ function Passport({ productId, onBack }: { productId: string; onBack: () => void
         recalls: current?.recalls,
       }));
       setProductAssets(assets);
+      if (outcome.accepted) {
+        setRefreshSuccess(refreshed.active_snapshot?.source.scraped_at ?? new Date().toISOString());
+      } else {
+        setError(
+          outcome.error ??
+            (outcome.served_cached
+              ? "The source refresh was not accepted; the last valid snapshot remains shown."
+              : "The source refresh was not accepted."),
+        );
+      }
+      getScraperHealth()
+        .then((items) => setScraperHealth(items.find((item) => item.product_id === productId) ?? null))
+        .catch(() => {
+          // The accepted snapshot is already visible; health is supplementary metadata.
+        });
     } catch (refreshError) {
       setError(refreshError instanceof ApiError ? refreshError.message : "The refresh request failed.");
     } finally {
@@ -352,11 +401,13 @@ function Passport({ productId, onBack }: { productId: string; onBack: () => void
     <div className="page passport-page">
       <button className="back-link" type="button" onClick={onBack}>← Back to catalog</button>
       {error ? <div className="inline-error">Refresh issue: {error}. The last valid snapshot remains shown below.</div> : null}
+      {refreshSuccess ? <div className="inline-success" role="status">Refresh succeeded. Accepted manufacturer data is current as of {displayDate(refreshSuccess, true)}.</div> : null}
       <section className="passport-hero">
         <div>
           <p className="eyebrow">Product Passport</p>
           <h1>{product.display_name}</h1>
           <p className="passport-subtitle">{product.manufacturer} · {product.category.replaceAll("_", " ").replaceAll("-", " ")} · {marketName(product.market)} formulation</p>
+          <p className="snapshot-badge"><span className="tag computed">{snapshotMode(scraperHealth)}</span></p>
         </div>
         <div className="passport-actions">
           <button className="button secondary" disabled={refreshing} onClick={refresh} type="button">{refreshing ? "Refreshing…" : "Refresh source"}</button>
@@ -369,6 +420,7 @@ function Passport({ productId, onBack }: { productId: string; onBack: () => void
             <div><span>Manufacturer source</span><a href={snapshot.source.url} rel="noreferrer" target="_blank">Open official page ↗</a></div>
             <div><span>Market formulation</span><strong>{marketName(snapshot.source.market)} ({snapshot.source.market})</strong></div>
             <div><span>Last product snapshot</span><strong>{displayDate(snapshot.source.scraped_at, true)}</strong></div>
+            <div><span>Data state</span><strong>{snapshotMode(scraperHealth)}</strong></div>
           </section>
           <SnapshotFacts assets={productAssets?.scraper_assets ?? null} snapshot={snapshot} />
         </>
@@ -491,7 +543,7 @@ function Compare({
         <div className="compare-action"><span>{selectedIds.length} selected</span><button className="button" disabled={selectedIds.length < 2 || loading} onClick={runCompare} type="button">{loading ? "Comparing…" : "Compare products"}</button></div>
       </> : null}
       {error ? <ErrorView message={error} /> : null}
-      {!loadingProducts && !productError && (results.length > 0 ? <section className="comparison-table-wrap"><table><thead><tr><th>Current data</th>{results.map((product) => <th key={product.id}><button className="table-product-link" onClick={() => onOpen(product.id)} type="button">{product.display_name}</button><small>{product.active_snapshot?.source.market ?? "—"} market</small></th>)}</tr></thead><tbody>{rows.map((row) => <tr key={row.label}><th>{row.label}</th>{results.map((product) => <td key={product.id}>{row.value(product)}</td>)}</tr>)}</tbody></table><p className="table-note">Values retain each manufacturer label's stated serving basis; check the Serving size row before comparing nutrition. — means the structured field is unavailable. Regulatory and recall details remain in each Product Passport.</p></section> : <section className="compare-placeholder"><h3>Select at least two products</h3><p>Then compare current manufacturer facts alongside available regulatory context.</p></section>)}
+      {!loadingProducts && !productError && (results.length > 0 ? <section className="comparison-table-wrap"><p className="compare-mobile-note" role="note">On a small screen, swipe left and right to view every product column.</p><table><thead><tr><th>Current data</th>{results.map((product) => <th key={product.id}><button className="table-product-link" onClick={() => onOpen(product.id)} type="button">{product.display_name}</button><small>{product.active_snapshot?.source.market ?? "—"} market</small></th>)}</tr></thead><tbody>{rows.map((row) => <tr key={row.label}><th>{row.label}</th>{results.map((product) => <td key={product.id}>{row.value(product)}</td>)}</tr>)}</tbody></table><p className="table-note">Values retain each manufacturer label's stated serving basis; check the Serving size row before comparing nutrition. — means the structured field is unavailable. Regulatory and recall details remain in each Product Passport.</p></section> : <section className="compare-placeholder"><h3>Select at least two products</h3><p>Then compare current manufacturer facts alongside available regulatory context.</p></section>)}
     </div>
   );
 }
@@ -564,7 +616,7 @@ function Health({ products, loadingProducts, productError }: { products: Product
   const [error, setError] = useState<string | null>(null);
   useEffect(() => { getScraperHealth().then(setHealth).catch(() => setError("Scraper health could not be loaded.")).finally(() => setLoading(false)); }, []);
   const names = useMemo(() => new Map(products.map((product) => [product.id, product.display_name])), [products]);
-  return <div className="page health-page"><p className="eyebrow">Data / Scraper health</p><h1>Trust starts with<br />the extraction.</h1><p className="page-intro">Invalid output is visible, and the last known valid snapshot remains available. RegLens does not claim to auto-repair a Bright Data collector.</p>{loading ? <LoadingView label="Loading scraper health…" /> : null}{error ? <ErrorView message={error} /> : null}{!loading && !error && health.length === 0 ? <EmptyEvidence>No source health records are available.</EmptyEvidence> : null}{loadingProducts ? <p className="health-catalog-note">Matching collector records to catalog names…</p> : null}{productError ? <p className="health-catalog-note">Catalog names are unavailable; product identifiers are shown instead.</p> : null}<div className="health-list">{health.map((item) => <article className="health-row" key={item.product_id}><div><p className="eyebrow">{names.get(item.product_id) ?? item.product_id}</p><h3>{item.source_url ? <a href={item.source_url} rel="noreferrer" target="_blank">Manufacturer source ↗</a> : "Source pending configuration"}</h3></div><div><span>Status</span><b className={statusClass(item.status)}>{item.status}</b></div><div><span>Schema</span><b>{item.schema_valid === null ? "Not checked" : item.schema_valid ? "Valid" : "Invalid"}</b></div><div><span>Last successful refresh</span><b>{displayDate(item.last_successful_refresh, true)}</b></div><div><span>Collector ID</span><b>{item.collector_id ?? "Not configured"}</b></div>{item.last_error ? <p className="health-error">Latest error: {item.last_error}</p> : null}</article>)}</div><section className="health-explainer"><h3>Manual repair flow</h3><p>When a configured collector produces malformed output, RegLens marks it unhealthy and preserves the last valid snapshot. Repair happens manually in Bright Data Scraper Studio; after a valid re-run, this status returns to Healthy.</p></section></div>;
+  return <div className="page health-page"><p className="eyebrow">Data / Scraper health</p><h1>Trust starts with<br />the extraction.</h1><p className="page-intro">Invalid output is visible, and the last known valid snapshot remains available. RegLens does not claim to auto-repair a Bright Data collector.</p>{loading ? <LoadingView label="Loading scraper health…" /> : null}{error ? <ErrorView message={error} /> : null}{!loading && !error && health.length === 0 ? <EmptyEvidence>No source health records are available.</EmptyEvidence> : null}{loadingProducts ? <p className="health-catalog-note">Matching collector records to catalog names…</p> : null}{productError ? <p className="health-catalog-note">Catalog names are unavailable; product identifiers are shown instead.</p> : null}<div className="health-list">{health.map((item) => { const displayedStatus = visibleHealthStatus(item); return <article className="health-row" key={item.product_id}><div><p className="eyebrow">{names.get(item.product_id) ?? item.product_id}</p><h3>{item.source_url ? <a href={item.source_url} rel="noreferrer" target="_blank">Manufacturer source ↗</a> : "Source pending configuration"}</h3></div><div><span>Status</span><b className={statusClass(displayedStatus)}>{displayedStatus}</b></div><div><span>Schema</span><b>{item.schema_valid === null ? "Not checked" : item.schema_valid ? "Valid" : "Invalid"}</b></div><div><span>Last successful refresh</span><b>{displayDate(item.last_successful_refresh, true)}</b></div><div><span>Snapshot age</span><b>{displaySnapshotAge(item.snapshot_age_seconds)}</b></div><div><span>Collector ID</span><b>{item.collector_id ?? "Not configured"}</b></div>{item.last_error ? <p className="health-error">Latest error: {item.last_error}</p> : null}</article>; })}</div><section className="health-explainer"><h3>Manual repair flow</h3><p>When a configured collector produces malformed output, RegLens marks it unhealthy and preserves the last valid snapshot. Repair happens manually in Bright Data Scraper Studio; after a valid re-run, this status returns to Healthy.</p></section></div>;
 }
 
 function EvidenceLibrary() {
