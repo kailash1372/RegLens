@@ -8,7 +8,7 @@ canonical Product Passport model.
 
 | Product | Market | Collector ID | Live output | Manual action |
 | --- | --- | --- | --- | --- |
-| Brach's Classic Jelly Beans | US | `c_mt5uzri62rgqs8h4cg` | Valid through provider normalization after CLI heal; brand remains missing | Optionally replace with the richer reviewed local parser in Studio |
+| Brach's Classic Jelly Beans | US | `c_mt5uzri62rgqs8h4cg` | Live output validated with brand, exact product identity, nutrition, ingredients, and provenance | Keep the reviewed parser aligned with the published Studio version |
 | Fanta Orange | SA | `c_mt5vf72d2duy4zg283` | Executed; noncanonical flattened output | Replace with local code/schema in Studio, publish, rerun |
 | Fanta Orange | CA | `c_mt5vl3jb1edb91v4dx` | Executed; noncanonical nested/string output | Replace with local code/schema in Studio, publish, rerun |
 | REIGN Orange Dreamsicle | US | `c_mt5w3b4emf5gnkj7m` | Executed; noncanonical and incomplete output | Replace with local code/schema in Studio, publish, rerun |
