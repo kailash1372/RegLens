@@ -1,0 +1,35 @@
+{
+  "brand": "Cheetos",
+  "product_name": "Cheetos, Crunchy, Cheese Flavored Snacks",
+  "product_line": "Crunchy",
+  "flavor": "Cheese",
+  "serving_size": {"value": 28, "unit": "g", "ml": null},
+  "caffeine_mg": null,
+  "calories": 160,
+  "sugar_g": 1,
+  "nutrition_facts": [
+    {"name": "Calories", "value": 160, "unit": null, "daily_value_percent": null},
+    {"name": "Total Fat", "value": 10, "unit": "g", "daily_value_percent": 13},
+    {"name": "Saturated Fat", "value": 1.5, "unit": "g", "daily_value_percent": 8},
+    {"name": "Trans Fat", "value": 0, "unit": "g", "daily_value_percent": null},
+    {"name": "Cholesterol", "value": 0, "unit": "mg", "daily_value_percent": 0},
+    {"name": "Sodium", "value": 200, "unit": "mg", "daily_value_percent": 9},
+    {"name": "Total Carbohydrate", "value": 15, "unit": "g", "daily_value_percent": 6},
+    {"name": "Dietary Fiber", "value": null, "unit": "g", "daily_value_percent": 3},
+    {"name": "Total Sugars", "value": 1, "unit": "g", "daily_value_percent": null},
+    {"name": "Protein", "value": 2, "unit": "g", "daily_value_percent": null},
+    {"name": "Vitamin D", "value": 0, "unit": "mcg", "daily_value_percent": 0},
+    {"name": "Calcium", "value": 10, "unit": "mg", "daily_value_percent": 0},
+    {"name": "Iron", "value": 0.6, "unit": "mg", "daily_value_percent": 2},
+    {"name": "Potassium", "value": 60, "unit": "mg", "daily_value_percent": 0}
+  ],
+  "ingredients": [],
+  "warnings": [],
+  "claims": [],
+  "source": {
+    "url": "https://smartlabel.pepsico.info/028400589864-0028-en-US/index.html?stylekey=cheetos-10",
+    "market": "US",
+    "scraped_at": "2026-08-23T13:50:00Z"
+  },
+  "scraper_assets": {"nutrition_label_images": []}
+}

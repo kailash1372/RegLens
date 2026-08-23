@@ -1,0 +1,76 @@
+{
+  "type": "object",
+  "fields": {
+    "brand": { "type": "text", "active": true },
+    "product_name": { "type": "text", "active": true },
+    "product_line": { "type": "text", "active": true },
+    "flavor": { "type": "text", "active": true },
+    "serving_size": {
+      "type": "object",
+      "active": true,
+      "fields": {
+        "value": { "type": "number", "active": true },
+        "unit": { "type": "text", "active": true },
+        "ml": { "type": "number", "active": true }
+      }
+    },
+    "caffeine_mg": { "type": "number", "active": true },
+    "calories": { "type": "number", "active": true },
+    "sugar_g": { "type": "number", "active": true },
+    "nutrition_facts": {
+      "type": "array",
+      "active": true,
+      "items": {
+        "type": "object",
+        "fields": {
+          "name": { "type": "text", "active": true },
+          "value": { "type": "number", "active": true },
+          "unit": { "type": "text", "active": true },
+          "daily_value_percent": { "type": "number", "active": true }
+        }
+      }
+    },
+    "ingredients": {
+      "type": "array",
+      "active": true,
+      "items": { "type": "text" }
+    },
+    "warnings": {
+      "type": "array",
+      "active": true,
+      "items": { "type": "text" }
+    },
+    "claims": {
+      "type": "array",
+      "active": true,
+      "items": { "type": "text" }
+    },
+    "source": {
+      "type": "object",
+      "active": true,
+      "fields": {
+        "url": { "type": "text", "active": true },
+        "market": { "type": "text", "active": true },
+        "scraped_at": { "type": "text", "active": true }
+      }
+    },
+    "scraper_assets": {
+      "type": "object",
+      "active": true,
+      "fields": {
+        "nutrition_label_images": {
+          "type": "array",
+          "active": true,
+          "items": {
+            "type": "object",
+            "fields": {
+              "url": { "type": "text", "active": true },
+              "content_type": { "type": "text", "active": true },
+              "purpose": { "type": "text", "active": true }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -150,6 +150,8 @@ activemq-data/
 # Environments
 .env
 .envrc
+.env.*
+!.env.example
 .venv
 env/
 venv/
@@ -205,6 +207,35 @@ tempCodeRunnerFile.py
 
 # Ruff stuff:
 .ruff_cache/
+
+# RegLens local runtime and frontend build artifacts
+# The default path is backend/data/reglens.db; backend/backend/data is retained
+# here for older local checkouts that created the database one level deeper.
+/backend/data/*.db
+/backend/data/*.db-*
+/backend/backend/data/*.db
+/backend/backend/data/*.db-*
+*.db-shm
+*.db-wal
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.cache/
+frontend/*.tsbuildinfo
+
+# Local editor, operating-system, and temporary files
+.DS_Store
+.AppleDouble
+.LSOverride
+.idea/
+.vscode/
+*.swp
+*.swo
+*.tmp
+*.temp
+tmp/
+.tmp/
+temp.txt
 
 # PyPI configuration file
 .pypirc

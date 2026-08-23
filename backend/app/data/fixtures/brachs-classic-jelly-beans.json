@@ -1,0 +1,40 @@
+{
+  "brand": "Brach's",
+  "product_name": "Classic Jelly Beans",
+  "product_line": "Classic Jelly Beans",
+  "flavor": null,
+  "serving_size": {"value": 10, "unit": "pieces", "ml": null},
+  "caffeine_mg": null,
+  "calories": 110,
+  "sugar_g": 21,
+  "nutrition_facts": [
+    {"name": "Calories", "value": 110, "unit": null, "daily_value_percent": null},
+    {"name": "Fat", "value": 0, "unit": "g", "daily_value_percent": null},
+    {"name": "Sugars", "value": 21, "unit": "g", "daily_value_percent": null},
+    {"name": "Sodium", "value": 5, "unit": "mg", "daily_value_percent": null}
+  ],
+  "ingredients": [
+    "Sugar",
+    "Corn Syrup",
+    "Modified Food Starch (Corn)",
+    "Cornstarch",
+    "Natural and Artificial Flavors",
+    "Confectioner's Glaze (Shellac)",
+    "Carnauba Wax",
+    "Beeswax",
+    "Red 40",
+    "Blue 1",
+    "Yellow 5",
+    "Yellow 6",
+    "Red 3"
+  ],
+  "warnings": [
+    "This product was manufactured in a facility where milk, eggs, almonds, coconut, peanuts and soy are used in the production of other products."
+  ],
+  "claims": [],
+  "source": {
+    "url": "https://www.brachs.com/products/easter/classic-jelly-beans",
+    "market": "US",
+    "scraped_at": "2026-08-23T13:43:10Z"
+  }
+}

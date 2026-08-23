@@ -1,0 +1,44 @@
+{
+  "brand": "DORITOS",
+  "product_name": "DORITOS® Nacho Cheese Flavored Tortilla Chips",
+  "product_line": "DORITOS",
+  "flavor": "Nacho Cheese",
+  "serving_size": {"value": 28, "unit": "g", "ml": null},
+  "caffeine_mg": null,
+  "calories": 150,
+  "sugar_g": null,
+  "nutrition_facts": [
+    {"name": "Calories", "value": 150, "unit": null, "daily_value_percent": null},
+    {"name": "Total Fat", "value": 8, "unit": "g", "daily_value_percent": 10},
+    {"name": "Saturated Fat", "value": 1, "unit": "g", "daily_value_percent": 6},
+    {"name": "Trans Fat", "value": 0, "unit": "g", "daily_value_percent": null},
+    {"name": "Cholesterol", "value": 0, "unit": "mg", "daily_value_percent": 0},
+    {"name": "Sodium", "value": 170, "unit": "mg", "daily_value_percent": 7},
+    {"name": "Total Carbohydrate", "value": 17, "unit": "g", "daily_value_percent": 6},
+    {"name": "Dietary Fiber", "value": 1, "unit": "g", "daily_value_percent": 5},
+    {"name": "Total Sugars", "value": null, "unit": "g", "daily_value_percent": null},
+    {"name": "Protein", "value": 2, "unit": "g", "daily_value_percent": null},
+    {"name": "Vitamin D", "value": 0, "unit": "mcg", "daily_value_percent": 0},
+    {"name": "Calcium", "value": 50, "unit": "mg", "daily_value_percent": 2},
+    {"name": "Iron", "value": 0.3, "unit": "mg", "daily_value_percent": 0},
+    {"name": "Potassium", "value": 100, "unit": "mg", "daily_value_percent": 2}
+  ],
+  "ingredients": [
+    "Corn", "Vegetable Oil", "Corn Oil", "And/Or Canola Oil", "And/Or Soybean Oil",
+    "And/Or Sunflower Oil", "Corn Maltodextrin", "Cheddar Cheese", "Milk",
+    "Cheese Cultures", "Salt", "Enzymes", "Whey", "Monosodium Glutamate",
+    "Buttermilk", "Romano Cheese", "Whey Protein Concentrate", "Onion Powder",
+    "Potassium Salt", "Corn Flour", "Natural & Artificial Flavors", "Dextrose",
+    "Tomato Powder", "Lactose", "Spices", "Artificial Color", "Yellow 6", "Yellow 5",
+    "Red 40", "Lactic Acid", "Citric Acid", "Sugar", "Garlic Powder", "Skim Milk",
+    "Red And Green Bell Peppers", "Disodium Inosinate", "Disodium Guanylate"
+  ],
+  "warnings": [],
+  "claims": [],
+  "source": {
+    "url": "https://www.doritos.com/products/doritos-nacho-cheese-flavored-tortilla-chips",
+    "market": "US",
+    "scraped_at": "2026-08-23T13:46:39Z"
+  },
+  "scraper_assets": {"nutrition_label_images": []}
+}

@@ -1,0 +1,31 @@
+{
+  "brand": "Red Bull",
+  "product_name": "Red Bull Energy Drink",
+  "product_line": "Red Bull Energy Drink",
+  "flavor": "Original",
+  "serving_size": {"value": 8.4, "unit": "fl oz", "ml": null},
+  "caffeine_mg": 80,
+  "calories": 110,
+  "sugar_g": 26,
+  "nutrition_facts": [
+    {"name": "Calories", "value": 110, "unit": null, "daily_value_percent": null},
+    {"name": "Fat", "value": 0, "unit": "g", "daily_value_percent": 0},
+    {"name": "Carbohydrate", "value": 29, "unit": "g", "daily_value_percent": null},
+    {"name": "Sugars", "value": 26, "unit": "g", "daily_value_percent": null},
+    {"name": "Protein", "value": 0, "unit": "g", "daily_value_percent": null},
+    {"name": "Sodium", "value": 105, "unit": "mg", "daily_value_percent": null},
+    {"name": "Niacin", "value": null, "unit": null, "daily_value_percent": 100},
+    {"name": "Panthotenic Acid", "value": null, "unit": null, "daily_value_percent": 50},
+    {"name": "Vitamin B6", "value": null, "unit": null, "daily_value_percent": 250},
+    {"name": "Vitamin B12", "value": null, "unit": null, "daily_value_percent": 80},
+    {"name": "Caffeine", "value": 80, "unit": "mg", "daily_value_percent": null}
+  ],
+  "ingredients": ["Caffeine", "Taurine", "B-group vitamins", "Sugars", "Water"],
+  "warnings": [],
+  "claims": ["Gives you wiiings"],
+  "source": {
+    "url": "https://www.redbull.com/us-en/energydrink/products/red-bull-energy-drink-ingredients-list",
+    "market": "US",
+    "scraped_at": "2026-08-23T13:35:51.638Z"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "brand": "Alani Nu",
+  "product_name": "Cotton Candy",
+  "product_line": "Energy Drink",
+  "flavor": "Cotton Candy",
+  "serving_size": {"value": 12, "unit": "fl oz", "ml": 355},
+  "caffeine_mg": 200,
+  "calories": 10,
+  "sugar_g": 0,
+  "nutrition_facts": [
+    {"name": "Calories", "value": 10, "unit": null, "daily_value_percent": null},
+    {"name": "Total Fat", "value": 0, "unit": "g", "daily_value_percent": 0},
+    {"name": "Sodium", "value": 180, "unit": "mg", "daily_value_percent": 8},
+    {"name": "Total Carbohydrate", "value": 3, "unit": "g", "daily_value_percent": 1},
+    {"name": "Total Sugars", "value": 0, "unit": "g", "daily_value_percent": null},
+    {"name": "Includes Added Sugars", "value": 0, "unit": "g", "daily_value_percent": 0},
+    {"name": "Protein", "value": 0, "unit": "g", "daily_value_percent": null},
+    {"name": "Niacin", "value": 16.8, "unit": "mg", "daily_value_percent": 110},
+    {"name": "Vitamin B6", "value": 1.8, "unit": "mg", "daily_value_percent": 110},
+    {"name": "Vitamin B12", "value": 2.5, "unit": "mcg", "daily_value_percent": 110},
+    {"name": "Biotin", "value": 30, "unit": "mcg", "daily_value_percent": 100},
+    {"name": "Pantothenic Acid", "value": 5.3, "unit": "mg", "daily_value_percent": 110}
+  ],
+  "ingredients": [
+    "Carbonated Water",
+    "Citric Acid",
+    "Taurine",
+    "Sodium Citrate",
+    "L-Theanine",
+    "Caffeine",
+    "Sucralose",
+    "Sodium Benzoate (Preservative)",
+    "Potassium Sorbate (Preservative)",
+    "L-Carnitine L-Tartrate",
+    "Acesulfame Potassium",
+    "Panax Ginseng Root Extract",
+    "Natural Flavor",
+    "Gum Arabic",
+    "Niacinamide (Vitamin B3)",
+    "Inositol",
+    "Glucuronolactone",
+    "D-Calcium Pantothenate (Vitamin B5)",
+    "Salt",
+    "Pyridoxine Hydrochloride (Vitamin B6)",
+    "Guarana Seed Extract",
+    "D-Biotin",
+    "Cyanocobalamin (Vitamin B12)"
+  ],
+  "warnings": [
+    "Contains: 200mg of caffeine and 0g sugar per can",
+    "Not recommended for children, people sensitive to caffeine, pregnant women or women who are nursing."
+  ],
+  "claims": ["Gluten free", "Vegan", "B vitamins", "Sugar free"],
+  "source": {
+    "url": "https://www.alaninu.com/products/energy-drink-cotton-candy",
+    "market": "US",
+    "scraped_at": "2026-08-22T12:00:00Z"
+  },
+  "scraper_assets": {
+    "nutrition_label_images": [
+      {
+        "url": "https://www.alaninu.com/cdn/shop/files/Stretch_AN-Website-12oz-PDP-CTC-03_V1.png?v=1782761358&width=2000",
+        "content_type": "image",
+        "purpose": "nutrition_label"
+      }
+    ]
+  }
+}

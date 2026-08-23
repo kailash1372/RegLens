@@ -1,0 +1,56 @@
+{
+  "brand": "Nongshim",
+  "product_name": "Shin Ramyun Original Bowl",
+  "product_line": "Shin Ramyun",
+  "flavor": "Original Big Bowl",
+  "serving_size": {"value": 114, "unit": "g", "ml": null},
+  "caffeine_mg": null,
+  "calories": 500,
+  "sugar_g": 4,
+  "nutrition_facts": [
+    {"name": "Total Fat", "value": 17, "unit": "g", "daily_value_percent": 22},
+    {"name": "Saturated Fat", "value": 8, "unit": "g", "daily_value_percent": 40},
+    {"name": "Trans Fat", "value": 0, "unit": "g", "daily_value_percent": null},
+    {"name": "Cholesterol", "value": 0, "unit": "mg", "daily_value_percent": 0},
+    {"name": "Sodium", "value": 1670, "unit": "mg", "daily_value_percent": 73},
+    {"name": "Total Carbohydrate", "value": 78, "unit": "g", "daily_value_percent": 28},
+    {"name": "Dietary Fiber", "value": 3, "unit": "g", "daily_value_percent": 11},
+    {"name": "Total Sugars", "value": 4, "unit": "g", "daily_value_percent": null},
+    {"name": "Incl. Added Sugars", "value": 2, "unit": "g", "daily_value_percent": 4},
+    {"name": "Protein", "value": 8, "unit": "g", "daily_value_percent": null},
+    {"name": "Vitamin D", "value": 0, "unit": "mcg", "daily_value_percent": 0},
+    {"name": "Calcium", "value": 30, "unit": "mg", "daily_value_percent": 2},
+    {"name": "Iron", "value": 2.1, "unit": "mg", "daily_value_percent": 10},
+    {"name": "Potassium", "value": 310, "unit": "mg", "daily_value_percent": 6}
+  ],
+  "ingredients": [
+    "ENRICHED WHEAT FLOUR (WHEAT FLOUR, NIACIN, REDUCED IRON, THIAMINE MONONITRATE, RIBOFLAVIN, FOLIC ACID)",
+    "POTATO STARCH", "PALM OIL", "MODIFIED POTATO STARCH", "SALT",
+    "CONTAINS LESS THAN 2% OF: ARTIFICIAL FLAVOR", "BEEF BONE EXTRACT†", "BEEF FAT†",
+    "BLACK PEPPER†", "CITRIC ACID", "DEXTROSE", "DISODIUM GUANYLATE",
+    "DISODIUM INOSINATE", "DISODIUM SUCCINATE",
+    "DRIED FLAKES [GREEN ONION, MUSHROOM, CARROT (CARROT, DEXTROSE), BOK CHOY, RED CHILI PEPPER]",
+    "FRUCTOSE SYRUP", "GARLIC†", "GLYCERIN", "GREEN ONION†", "GUM ARABIC",
+    "HYDROLYZED CORN PROTEIN", "HYDROLYZED SOY PROTEIN", "HYDROLYZED WHEAT PROTEIN",
+    "MALTODEXTRIN", "MONO- & DIGLYCERIDES", "MONOSODIUM GLUTAMATE", "MUSHROOM EXTRACT†",
+    "MUSHROOM†", "NATURAL FLAVORS (CONTAINS SESAME)", "ONION†",
+    "POLYGLYCEROL ESTERS OF FATTY ACIDS", "POTASSIUM CARBONATE", "RED CHILI PEPPER†",
+    "RIBOFLAVIN (COLOR)", "RICE FLOUR", "SODIUM CARBONATE", "SODIUM PHOSPHATES",
+    "SOYBEAN PASTE† (SOY, WHEAT, SALT)", "SOYBEAN SPROUT EXTRACT†", "SUGAR",
+    "TOCOPHEROLS (ANTIOXIDANT)",
+    "VEGETABLE MIXTURE† (ONION, CORN SYRUP, CABBAGE, SPINACH, PUMPKIN, CARROT, TOMATO PASTE)",
+    "WHEAT STARCH", "YEAST EXTRACT", "YELLOW CORN FLOUR"
+  ],
+  "warnings": [
+    "CONTAINS WHEAT, SOY, AND SESAME.",
+    "MANUFACTURED IN A FACILITY THAT ALSO PROCESSES MILK, EGGS, TREE NUTS, PEANUTS, FISH, AND CRUSTACEAN SHELLFISH.",
+    "INGREDIENTS, NUTRITION FACTS, AND ALLERGEN STATEMENTS CAN CHANGE. ALWAYS REFER TO THE ACTUAL PACKAGE FOR THE MOST COMPLETE AND ACCURATE INFORMATION."
+  ],
+  "claims": [],
+  "source": {
+    "url": "https://nongshimusa.com/product-detail?pid=21",
+    "market": "US",
+    "scraped_at": "2026-08-23T13:50:00Z"
+  },
+  "scraper_assets": {"nutrition_label_images": []}
+}
